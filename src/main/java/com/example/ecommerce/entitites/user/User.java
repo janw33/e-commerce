@@ -1,4 +1,4 @@
-package entitites;
+package com.example.ecommerce.entitites.user;
 
 import jakarta.persistence.*;
 import lombok.*;

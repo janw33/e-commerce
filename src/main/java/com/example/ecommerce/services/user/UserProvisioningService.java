@@ -1,10 +1,10 @@
-package services;
+package com.example.ecommerce.services.user;
 
-import entitites.User;
+import com.example.ecommerce.entitites.user.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
-import repositories.UserRepository;
+import com.example.ecommerce.repositories.user.UserRepository;
 
 @Service
 public class UserProvisioningService {
@@ -27,9 +27,9 @@ public class UserProvisioningService {
 
         User user = User.builder()
                 .externalId(jwt.getSubject())
-                .email(jwt.getClaimAsString("email"))
                 .firstName(jwt.getClaimAsString("given_name"))
                 .lastName(jwt.getClaimAsString("family_name"))
+                .email(jwt.getClaimAsString("email"))
                 .phoneNumber(jwt.getClaimAsString("phone_number"))
                 .build();
 

@@ -1,4 +1,4 @@
-package exceptions;
+package com.example.ecommerce.dtos.error;
 
 import lombok.*;
 

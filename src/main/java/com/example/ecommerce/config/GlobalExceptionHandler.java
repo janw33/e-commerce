@@ -1,8 +1,8 @@
-package config;
+package com.example.ecommerce.config;
 
-import exceptions.ErrorResponse;
-import exceptions.UserNotFoundException;
-import exceptions.ValidationErrorResponse;
+import com.example.ecommerce.dtos.error.ErrorResponse;
+import com.example.ecommerce.exceptions.UserNotFoundException;
+import com.example.ecommerce.exceptions.ValidationErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

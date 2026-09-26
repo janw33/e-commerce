@@ -1,4 +1,4 @@
-package dtos;
+package com.example.ecommerce.dtos.auth;
 
 import lombok.*;
 

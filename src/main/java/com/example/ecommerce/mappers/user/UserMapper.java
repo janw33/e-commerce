@@ -1,21 +1,11 @@
-package mappers;
+package com.example.ecommerce.mappers.user;
 
-import dtos.RegisterRequest;
-import dtos.UserResponse;
-import entitites.User;
+import com.example.ecommerce.dtos.auth.UserResponse;
+import com.example.ecommerce.entitites.user.User;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserMapper {
-    public User toEntity(RegisterRequest request) {
-        return User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .phoneNumber(request.getPhoneNumber())
-                .build();
-    }
-
     public UserResponse toResponse(User user) {
         return UserResponse.builder()
                 .id(user.getId())

@@ -1,13 +1,9 @@
-package controllers;
+package com.example.ecommerce.controllers.auth;
 
-import config.CurrentUserProvider;
-import dtos.AuthResponse;
-import dtos.RegisterRequest;
-import dtos.UserResponse;
-import entitites.User;
-import jakarta.validation.Valid;
-import mappers.UserMapper;
-import org.springframework.http.HttpStatus;
+import com.example.ecommerce.config.CurrentUserProvider;
+import com.example.ecommerce.dtos.auth.UserResponse;
+import com.example.ecommerce.entitites.user.User;
+import com.example.ecommerce.mappers.user.UserMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 

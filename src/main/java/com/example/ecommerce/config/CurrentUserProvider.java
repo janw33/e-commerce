@@ -1,24 +1,20 @@
-package config;
+package com.example.ecommerce.config;
 
-import entitites.User;
-import exceptions.UserNotFoundException;
+import com.example.ecommerce.entitites.user.User;
+import com.example.ecommerce.services.user.UserProvisioningService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import repositories.UserRepository;
 
 @Component
 public class CurrentUserProvider {
 
-    private final UserRepository userRepository;
+    private final UserProvisioningService userProvisioningService;
 
-    public CurrentUserProvider(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public CurrentUserProvider(UserProvisioningService userProvisioningService) {
+        this.userProvisioningService = userProvisioningService;
     }
 
     public User get(Authentication authentication) {
-        String externalId = authentication.getName();
-
-        return userRepository.findByExternalId(externalId)
-                .orElseThrow(UserNotFoundException::new);
+        return userProvisioningService.getOrCreate(authentication);
     }
 }
