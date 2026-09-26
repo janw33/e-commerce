@@ -1,6 +1,6 @@
-package services;
+package com.example.ecommerce.services;
 
-import BaseTest.user.BaseTestUser;
+import com.example.ecommerce.BaseTest.user.BaseTestUser;
 import com.example.ecommerce.entitites.user.User;
 import com.example.ecommerce.repositories.user.UserRepository;
 import com.example.ecommerce.services.user.UserProvisioningService;

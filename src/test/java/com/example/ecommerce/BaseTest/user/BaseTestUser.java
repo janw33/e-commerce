@@ -1,4 +1,4 @@
-package BaseTest.user;
+package com.example.ecommerce.BaseTest.user;
 
 import com.example.ecommerce.TestDataUtil;
 import com.example.ecommerce.entitites.user.User;

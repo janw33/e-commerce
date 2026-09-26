@@ -1,6 +1,6 @@
-package providers;
+package com.example.ecommerce.providers;
 
-import BaseTest.user.BaseTestUser;
+import com.example.ecommerce.BaseTest.user.BaseTestUser;
 import com.example.ecommerce.entitites.user.User;
 import com.example.ecommerce.providers.user.CurrentUserProvider;
 import com.example.ecommerce.services.user.UserProvisioningService;
