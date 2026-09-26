@@ -34,6 +34,7 @@ public class User {
     @Column(length = 30)
     private String phoneNumber;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean active = true;
 
