@@ -1,4 +1,4 @@
-package com.example.ecommerce.config;
+package com.example.ecommerce.providers.user;
 
 import com.example.ecommerce.entitites.user.User;
 import com.example.ecommerce.services.user.UserProvisioningService;

@@ -1,6 +1,6 @@
 package com.example.ecommerce.controllers.auth;
 
-import com.example.ecommerce.config.CurrentUserProvider;
+import com.example.ecommerce.providers.user.CurrentUserProvider;
 import com.example.ecommerce.dtos.auth.UserResponse;
 import com.example.ecommerce.entitites.user.User;
 import com.example.ecommerce.mappers.user.UserMapper;
