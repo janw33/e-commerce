@@ -8,3 +8,6 @@ CREATE TABLE categories (
         FOREIGN KEY (parent_id)
         REFERENCES categories(id)
 );
+
+CREATE UNIQUE INDEX uq_category_name_parent
+    ON categories (name, COALESCE(parent_id, 0));
