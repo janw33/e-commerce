@@ -12,7 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -26,6 +26,7 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Relations
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
@@ -34,6 +35,11 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "brand_id", nullable = false)
+    private Brand brand;
+
+    // Basic information
     @Column(nullable = false, length = 100)
     private String title;
 
@@ -43,16 +49,19 @@ public class Product {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    @Column(nullable = false, length = 3)
-    private String currency;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "brand_id", nullable = false)
-    private Brand brand;
-
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
-    private Color color;
+    @Column(nullable = false, length = 3)
+    private Currency currency;
+
+    // Product attributes
+    @ElementCollection(targetClass = Color.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(
+            name = "product_colors",
+            joinColumns = @JoinColumn(name = "product_id")
+    )
+    @Column(name = "color")
+    private Set<Color> colors;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -65,25 +74,27 @@ public class Product {
             joinColumns = @JoinColumn(name = "product_id")
     )
     @Column(name = "material")
-    private List<Material> materials;
+    private Set<Material> materials;
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 30, nullable = false)
+    @Column(nullable = false, length = 30)
     private Size size;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ShippingSize shippingSize;
 
+    // Product state
     @Builder.Default
     @Column(nullable = false)
     private Long viewCount = 0L;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     private Status status = Status.ACTIVE;
 
+    // Timestamps
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -93,4 +104,6 @@ public class Product {
     private LocalDateTime updatedAt;
 
     private LocalDateTime deletedAt;
+
+    private LocalDateTime soldAt;
 }
