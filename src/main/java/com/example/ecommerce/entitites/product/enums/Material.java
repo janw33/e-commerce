@@ -1,0 +1,37 @@
+package com.example.ecommerce.entitites.product.enums;
+
+public enum Material {
+    ACRYLIC,
+    ALPACA,
+    CANVAS,
+    CASHMERE,
+    CHIFFON,
+    COTTON,
+    DENIM,
+    VISCOSE,
+    WOOL,
+    VELVET,
+    ELASTANE,
+    TEXTILE,
+    FAUX_FUR,
+    FAUX_LEATHER,
+    FAUX_SUEDE,
+    FLEECE,
+    LEATHER,
+    LINEN,
+    LYOCELL,
+    MERINO_WOOL,
+    MESH,
+    MODAL,
+    MOHAIR,
+    NUBUCK,
+    NYLON,
+    PATENT_LEATHER,
+    PLASTIC,
+    POLYESTER,
+    RUBBER,
+    SATIN,
+    SILK,
+    SUEDE
+}
+

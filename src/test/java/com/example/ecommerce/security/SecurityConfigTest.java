@@ -6,6 +6,7 @@ import com.example.ecommerce.controllers.auth.AuthController;
 import com.example.ecommerce.dtos.auth.UserResponse;
 import com.example.ecommerce.mappers.user.UserMapper;
 import com.example.ecommerce.providers.user.CurrentUserProvider;
+import com.example.ecommerce.services.user.AuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -27,10 +28,7 @@ class SecurityConfigTest extends BaseTestUser {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private CurrentUserProvider currentUserProvider;
-
-    @MockitoBean
-    private UserMapper userMapper;
+    private AuthService authService;
 
     @Test
     void shouldReturn401WhenUserIsUnauthenticated() throws Exception {
@@ -43,11 +41,8 @@ class SecurityConfigTest extends BaseTestUser {
 
     @Test
     void shouldAllowRequestWhenUserIsAuthenticated() throws Exception {
-        when(currentUserProvider.get(any()))
-                .thenReturn(user);
-
-        when(userMapper.toResponse(user))
-                .thenReturn(new UserResponse());
+        when(authService.getCurrentUser(any()))
+                .thenReturn(userResponse);
 
         mockMvc.perform(
                 get("/api/v1/auth/me")

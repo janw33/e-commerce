@@ -1,5 +1,6 @@
 package com.example.ecommerce;
 
+import com.example.ecommerce.dtos.auth.UserResponse;
 import com.example.ecommerce.entitites.user.User;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,17 @@ public final class TestDataUtil {
                 .active(true)
                 .createdAt(testDate())
                 .updatedAt(testDate())
+                .build();
+    }
+
+    public static UserResponse userResponse() {
+        return UserResponse.builder()
+                .id(user().getId())
+                .externalId(user().getExternalId())
+                .firstName(user().getFirstName())
+                .lastName(user().getLastName())
+                .email(user().getEmail())
+                .phoneNumber(user().getPhoneNumber())
                 .build();
     }
 }

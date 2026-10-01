@@ -2,6 +2,7 @@ package com.example.ecommerce.controllers;
 
 import com.example.ecommerce.BaseTest.user.BaseTestUser;
 import com.example.ecommerce.providers.user.CurrentUserProvider;
+import com.example.ecommerce.services.user.AuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,7 +26,7 @@ public class GetCurrentUserTests extends BaseTestUser {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private CurrentUserProvider currentUserProvider;
+    private AuthService authService;
 
     private RequestPostProcessor authenticatedUser() {
         return jwt()
@@ -51,8 +52,8 @@ public class GetCurrentUserTests extends BaseTestUser {
 
     @Test
     void shouldReturnHttp200WhenRequestIsValid() throws Exception {
-        when(currentUserProvider.get(any()))
-                .thenReturn(user);
+        when(authService.getCurrentUser(any()))
+                .thenReturn(userResponse);
 
         performGet(status().isOk(),
                 jsonPath("$.id").value(user.getId()),
