@@ -4,5 +4,5 @@ public enum SizeType {
     NONE,
     CLOTHING,
     WAIST,
-    SHOE
+    SHOES
 }

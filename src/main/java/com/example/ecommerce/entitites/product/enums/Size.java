@@ -1,5 +1,10 @@
 package com.example.ecommerce.entitites.product.enums;
+
+import lombok.Getter;
+
+@Getter
 public enum Size {
+    ONE_SIZE(SizeType.NONE),
 
     XXXS(SizeType.CLOTHING),
     XXS(SizeType.CLOTHING),
@@ -37,49 +42,45 @@ public enum Size {
     W48(SizeType.WAIST),
     W50(SizeType.WAIST),
 
-    EU_34(SizeType.SHOE),
-    EU_34_5(SizeType.SHOE),
-    EU_35(SizeType.SHOE),
-    EU_35_5(SizeType.SHOE),
-    EU_36(SizeType.SHOE),
-    EU_36_5(SizeType.SHOE),
-    EU_37(SizeType.SHOE),
-    EU_37_5(SizeType.SHOE),
-    EU_38(SizeType.SHOE),
-    EU_38_5(SizeType.SHOE),
-    EU_39(SizeType.SHOE),
-    EU_39_5(SizeType.SHOE),
-    EU_40(SizeType.SHOE),
-    EU_40_5(SizeType.SHOE),
-    EU_41(SizeType.SHOE),
-    EU_41_5(SizeType.SHOE),
-    EU_42(SizeType.SHOE),
-    EU_42_5(SizeType.SHOE),
-    EU_43(SizeType.SHOE),
-    EU_43_5(SizeType.SHOE),
-    EU_44(SizeType.SHOE),
-    EU_44_5(SizeType.SHOE),
-    EU_45(SizeType.SHOE),
-    EU_45_5(SizeType.SHOE),
-    EU_46(SizeType.SHOE),
-    EU_46_5(SizeType.SHOE),
-    EU_47(SizeType.SHOE),
-    EU_47_5(SizeType.SHOE),
-    EU_48(SizeType.SHOE),
-    EU_48_5(SizeType.SHOE),
-    EU_49(SizeType.SHOE),
-    EU_49_5(SizeType.SHOE),
-    EU_50(SizeType.SHOE),
-    EU_51(SizeType.SHOE),
-    EU_52(SizeType.SHOE);
+    EU_34(SizeType.SHOES),
+    EU_34_5(SizeType.SHOES),
+    EU_35(SizeType.SHOES),
+    EU_35_5(SizeType.SHOES),
+    EU_36(SizeType.SHOES),
+    EU_36_5(SizeType.SHOES),
+    EU_37(SizeType.SHOES),
+    EU_37_5(SizeType.SHOES),
+    EU_38(SizeType.SHOES),
+    EU_38_5(SizeType.SHOES),
+    EU_39(SizeType.SHOES),
+    EU_39_5(SizeType.SHOES),
+    EU_40(SizeType.SHOES),
+    EU_40_5(SizeType.SHOES),
+    EU_41(SizeType.SHOES),
+    EU_41_5(SizeType.SHOES),
+    EU_42(SizeType.SHOES),
+    EU_42_5(SizeType.SHOES),
+    EU_43(SizeType.SHOES),
+    EU_43_5(SizeType.SHOES),
+    EU_44(SizeType.SHOES),
+    EU_44_5(SizeType.SHOES),
+    EU_45(SizeType.SHOES),
+    EU_45_5(SizeType.SHOES),
+    EU_46(SizeType.SHOES),
+    EU_46_5(SizeType.SHOES),
+    EU_47(SizeType.SHOES),
+    EU_47_5(SizeType.SHOES),
+    EU_48(SizeType.SHOES),
+    EU_48_5(SizeType.SHOES),
+    EU_49(SizeType.SHOES),
+    EU_49_5(SizeType.SHOES),
+    EU_50(SizeType.SHOES),
+    EU_51(SizeType.SHOES),
+    EU_52(SizeType.SHOES);
 
     private final SizeType type;
 
     Size(SizeType type) {
         this.type = type;
-    }
-
-    public SizeType getType() {
-        return type;
     }
 }
