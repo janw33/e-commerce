@@ -1,0 +1,1 @@
+INSERT INTO brand_category

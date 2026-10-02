@@ -178,4 +178,6 @@ VALUES
     ('Palladium'),
     ('CAT'),
     ('Red Wing'),
-    ('Merrell');
+    ('Merrell'),
+    ('Other'),
+    ('None');
