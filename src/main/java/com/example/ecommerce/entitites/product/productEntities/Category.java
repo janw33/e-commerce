@@ -1,6 +1,5 @@
 package com.example.ecommerce.entitites.product.productEntities;
 
-import com.example.ecommerce.entitites.product.enums.CategoryGroup;
 import com.example.ecommerce.entitites.product.enums.SizeType;
 import jakarta.persistence.*;
 import lombok.*;
