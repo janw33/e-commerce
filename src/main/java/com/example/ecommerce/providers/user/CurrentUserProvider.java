@@ -14,7 +14,11 @@ public class CurrentUserProvider {
         this.userProvisioningService = userProvisioningService;
     }
 
-    public User get(Authentication authentication) {
+    public User getOrCreate(Authentication authentication) {
         return userProvisioningService.getOrCreate(authentication);
+    }
+
+    public User get(Authentication authentication) {
+        return userProvisioningService.get(authentication);
     }
 }

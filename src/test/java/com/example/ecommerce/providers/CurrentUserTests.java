@@ -31,7 +31,7 @@ public class CurrentUserTests extends BaseTestUser {
         when(userProvisioningService.getOrCreate(authentication))
                 .thenReturn(user);
 
-        User result = currentUserProvider.get(authentication);
+        User result = currentUserProvider.getOrCreate(authentication);
 
         assertEquals(user, result);
 

@@ -18,7 +18,7 @@ public class AuthService {
     }
 
     public UserResponse getCurrentUser(Authentication authentication) {
-        User user = currentUserProvider.get(authentication);
+        User user = currentUserProvider.getOrCreate(authentication);
         return userMapper.toResponse(user);
     }
 }

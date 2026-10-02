@@ -1,9 +1,6 @@
 package com.example.ecommerce.controllers.auth;
 
-import com.example.ecommerce.providers.user.CurrentUserProvider;
 import com.example.ecommerce.dtos.auth.UserResponse;
-import com.example.ecommerce.entitites.user.User;
-import com.example.ecommerce.mappers.user.UserMapper;
 import com.example.ecommerce.services.user.AuthService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;

@@ -1,6 +1,7 @@
 package com.example.ecommerce.services.user;
 
 import com.example.ecommerce.entitites.user.User;
+import com.example.ecommerce.exceptions.UserNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,17 @@ public class UserProvisioningService {
         this.userRepository = userRepository;
     }
 
+    public User get(Authentication authentication) {
+        String externalId = authentication.getName();
+
+        return userRepository.findByExternalIdAndActiveTrue(externalId)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
     public User getOrCreate(Authentication authentication) {
         String externalId = authentication.getName();
 
-        return userRepository.findByExternalId(externalId)
+        return userRepository.findByExternalIdAndActiveTrue(externalId)
                 .orElseGet(() -> createUser(authentication));
     }
 
