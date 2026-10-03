@@ -1,6 +1,7 @@
 package com.example.ecommerce.BaseTest.category;
 
 import com.example.ecommerce.TestDataUtil;
+import com.example.ecommerce.dtos.category.CategoryDetailsResponse;
 import com.example.ecommerce.dtos.category.CategorySummaryResponse;
 import com.example.ecommerce.entitites.product.productEntities.Category;
 import com.example.ecommerce.entitites.user.User;
@@ -11,11 +12,14 @@ public abstract class BaseTestCategory {
     protected Category category;
 
     protected CategorySummaryResponse categorySummaryResponse;
+    protected CategoryDetailsResponse categoryDetailsResponse;
+
     @BeforeEach
     public void setupBase() {
         user = TestDataUtil.user();
         category = TestDataUtil.category();
 
-        categorySummaryResponse = TestDataUtil.categoryResponse();
+        categorySummaryResponse = TestDataUtil.categorySummaryResponse();
+        categoryDetailsResponse = TestDataUtil.categoryDetailsResponse();
     }
 }

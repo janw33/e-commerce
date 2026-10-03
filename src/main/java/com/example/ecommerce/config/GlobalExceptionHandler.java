@@ -1,6 +1,7 @@
 package com.example.ecommerce.config;
 
 import com.example.ecommerce.dtos.error.ErrorResponse;
+import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.exceptions.validation.ValidationErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -60,7 +61,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
+    @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCategoryNotFoundException(
             UserNotFoundException exception,
             HttpServletRequest request

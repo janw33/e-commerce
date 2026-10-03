@@ -1,6 +1,7 @@
 package com.example.ecommerce;
 
 import com.example.ecommerce.dtos.auth.UserResponse;
+import com.example.ecommerce.dtos.category.CategoryDetailsResponse;
 import com.example.ecommerce.dtos.category.CategorySummaryResponse;
 import com.example.ecommerce.entitites.product.enums.SizeType;
 import com.example.ecommerce.entitites.product.productEntities.Category;
@@ -38,20 +39,40 @@ public final class TestDataUtil {
                 .build();
     }
 
-    public static Category category() {
+    public static Category categoryParent() {
         return Category.builder()
-                .id(1L)
-                .name("test")
+                .id(null)
+                .name("testParent")
                 .parent(null)
                 .sizeType(SizeType.NONE)
                 .build();
     }
 
-    public static CategorySummaryResponse categoryResponse() {
+
+    public static Category category() {
+        return Category.builder()
+                .id(1L)
+                .name("test")
+                .parent(categoryParent())
+                .sizeType(SizeType.NONE)
+                .build();
+    }
+
+    public static CategorySummaryResponse categorySummaryResponse() {
         return CategorySummaryResponse.builder()
                 .id(category().getId())
                 .name(category().getName())
                 .sizeType(category().getSizeType())
+                .hasChildren(true)
+                .build();
+    }
+
+    public static CategoryDetailsResponse categoryDetailsResponse() {
+        return CategoryDetailsResponse.builder()
+                .id(category().getId())
+                .name(category().getName())
+                .sizeType(category().getSizeType())
+                .parentId(category().getParent().getId())
                 .hasChildren(true)
                 .build();
     }

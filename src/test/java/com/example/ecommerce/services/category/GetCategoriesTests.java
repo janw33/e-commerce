@@ -79,23 +79,18 @@ public class GetCategoriesTests extends BaseTestCategory {
         when(categoryRepository.findCategories(null, Pageable.unpaged()))
                 .thenReturn(page);
 
-        Page<CategorySummaryResponse> categories =
-                categoryService.getCategories(
-                        authentication,
-                        null,
-                        Pageable.unpaged()
-                );
+        Page<CategorySummaryResponse> result = categoryService.getCategories(
+                authentication, null, Pageable.unpaged());
 
-        assertEquals(1, categories.getTotalElements());
+        assertEquals(1, result.getTotalElements());
 
-        CategorySummaryResponse response = categories.getContent().getFirst();
+        CategorySummaryResponse first = result.getContent().getFirst();
 
-        assertEquals(projection.getId(), response.getId());
-        assertEquals(projection.getName(), response.getName());
-        assertEquals(projection.getSizeType(), response.getSizeType());
-        assertTrue(response.isHasChildren());
+        assertEquals(projection.getId(), first.getId());
+        assertEquals(projection.getName(), first.getName());
+        assertEquals(projection.getSizeType(), first.getSizeType());
+        assertTrue(first.isHasChildren());
 
-        verify(categoryRepository)
-                .findCategories(null, Pageable.unpaged());
+        verify(categoryRepository).findCategories(null, Pageable.unpaged());
     }
 }

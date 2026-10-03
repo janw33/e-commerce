@@ -33,14 +33,14 @@ public class UserProvisioningTests extends BaseTestUser {
         when(authentication.getName())
                 .thenReturn(user.getExternalId());
 
-        when(userRepository.findByExternalId(user.getExternalId()))
+        when(userRepository.findByExternalIdAndActiveTrue(user.getExternalId()))
                 .thenReturn(Optional.of(user));
 
         User result = userProvisioningService.getOrCreate(authentication);
 
         assertEquals(user, result);
 
-        verify(userRepository).findByExternalId(user.getExternalId());
+        verify(userRepository).findByExternalIdAndActiveTrue(user.getExternalId());
         verify(userRepository, never()).save(any());
     }
 
@@ -51,7 +51,7 @@ public class UserProvisioningTests extends BaseTestUser {
         when(authentication.getName())
                 .thenReturn("NotRecordedExternalId");
 
-        when(userRepository.findByExternalId("NotRecordedExternalId"))
+        when(userRepository.findByExternalIdAndActiveTrue("NotRecordedExternalId"))
                 .thenReturn(Optional.empty());
 
         when(authentication.getPrincipal())
@@ -83,7 +83,7 @@ public class UserProvisioningTests extends BaseTestUser {
         assertEquals(user.getEmail(), result.getEmail());
         assertEquals(user.getPhoneNumber(), result.getPhoneNumber());
 
-        verify(userRepository).findByExternalId("NotRecordedExternalId");
+        verify(userRepository).findByExternalIdAndActiveTrue("NotRecordedExternalId");
         verify(userRepository).save(any(User.class));
     }
 }
