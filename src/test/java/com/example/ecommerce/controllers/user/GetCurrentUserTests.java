@@ -1,7 +1,6 @@
-package com.example.ecommerce.controllers;
+package com.example.ecommerce.controllers.user;
 
 import com.example.ecommerce.BaseTest.user.BaseTestUser;
-import com.example.ecommerce.providers.user.CurrentUserProvider;
 import com.example.ecommerce.services.user.AuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

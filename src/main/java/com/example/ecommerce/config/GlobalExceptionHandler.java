@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCategoryNotFoundException(
-            UserNotFoundException exception,
+            CategoryNotFoundException exception,
             HttpServletRequest request
     ) {
         ErrorResponse error = ErrorResponse.builder()
