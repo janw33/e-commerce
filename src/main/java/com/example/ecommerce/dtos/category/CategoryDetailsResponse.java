@@ -8,9 +8,10 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryResponse {
+public class CategoryDetailsResponse {
     private Long id;
     private String name;
     private SizeType sizeType;
+    private Long parentId;
     private boolean hasChildren;
 }

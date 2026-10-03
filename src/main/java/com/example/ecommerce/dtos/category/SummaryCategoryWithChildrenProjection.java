@@ -2,7 +2,7 @@ package com.example.ecommerce.dtos.category;
 
 import com.example.ecommerce.entitites.product.enums.SizeType;
 
-public interface CategoryWithChildrenProjection {
+public interface SummaryCategoryWithChildrenProjection {
     Long getId();
     String getName();
     SizeType getSizeType();

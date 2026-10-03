@@ -1,9 +1,9 @@
 package com.example.ecommerce.services.category;
 
-import com.example.ecommerce.dtos.category.CategoryResponse;
-import com.example.ecommerce.entitites.product.productEntities.Category;
-import com.example.ecommerce.entitites.user.User;
-import com.example.ecommerce.exceptions.UserNotFoundException;
+import com.example.ecommerce.dtos.category.CategoryDetailsResponse;
+import com.example.ecommerce.dtos.category.CategorySummaryResponse;
+import com.example.ecommerce.dtos.category.DetailsCategoryWithChildrenProjection;
+import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
 import com.example.ecommerce.mappers.category.CategoryMapper;
 import com.example.ecommerce.providers.user.CurrentUserProvider;
 import com.example.ecommerce.repositories.category.CategoryRepository;
@@ -24,7 +24,7 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public Page<CategoryResponse> getCategories(
+    public Page<CategorySummaryResponse> getCategories(
             Authentication authentication,
             Long parentId,
             Pageable pageable
@@ -33,6 +33,13 @@ public class CategoryService {
 
         return categoryRepository
                 .findCategories(parentId, pageable)
-                .map(categoryMapper::toResponse);
+                .map(categoryMapper::toSummaryResponse);
+    }
+
+    public CategoryDetailsResponse getCategory(Authentication authentication, Long id) {
+        currentUserProvider.get(authentication);
+
+        return categoryMapper.toDetailsResponse(categoryRepository.findCategory(id)
+                .orElseThrow(CategoryNotFoundException::new));
     }
 }

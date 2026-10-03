@@ -1,9 +1,9 @@
 package com.example.ecommerce.services.category;
 
 import com.example.ecommerce.BaseTest.category.BaseTestCategory;
-import com.example.ecommerce.dtos.category.CategoryResponse;
-import com.example.ecommerce.dtos.category.CategoryWithChildrenProjection;
-import com.example.ecommerce.exceptions.UserNotFoundException;
+import com.example.ecommerce.dtos.category.CategorySummaryResponse;
+import com.example.ecommerce.dtos.category.SummaryCategoryWithChildrenProjection;
+import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.mappers.category.CategoryMapper;
 import com.example.ecommerce.providers.user.CurrentUserProvider;
 import com.example.ecommerce.repositories.category.CategoryRepository;
@@ -65,21 +65,21 @@ public class GetCategoriesTests extends BaseTestCategory {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        CategoryWithChildrenProjection projection =
-                mock(CategoryWithChildrenProjection.class);
+        SummaryCategoryWithChildrenProjection projection =
+                mock(SummaryCategoryWithChildrenProjection.class);
 
         when(projection.getId()).thenReturn(category.getId());
         when(projection.getName()).thenReturn(category.getName());
         when(projection.getSizeType()).thenReturn(category.getSizeType());
         when(projection.getHasChildren()).thenReturn(true);
 
-        Page<CategoryWithChildrenProjection> page =
+        Page<SummaryCategoryWithChildrenProjection> page =
                 new PageImpl<>(List.of(projection));
 
         when(categoryRepository.findCategories(null, Pageable.unpaged()))
                 .thenReturn(page);
 
-        Page<CategoryResponse> categories =
+        Page<CategorySummaryResponse> categories =
                 categoryService.getCategories(
                         authentication,
                         null,
@@ -88,7 +88,7 @@ public class GetCategoriesTests extends BaseTestCategory {
 
         assertEquals(1, categories.getTotalElements());
 
-        CategoryResponse response = categories.getContent().getFirst();
+        CategorySummaryResponse response = categories.getContent().getFirst();
 
         assertEquals(projection.getId(), response.getId());
         assertEquals(projection.getName(), response.getName());

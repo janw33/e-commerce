@@ -1,8 +1,7 @@
 package com.example.ecommerce;
 
 import com.example.ecommerce.dtos.auth.UserResponse;
-import com.example.ecommerce.dtos.category.CategoryResponse;
-import com.example.ecommerce.dtos.category.CategoryWithChildrenProjection;
+import com.example.ecommerce.dtos.category.CategorySummaryResponse;
 import com.example.ecommerce.entitites.product.enums.SizeType;
 import com.example.ecommerce.entitites.product.productEntities.Category;
 import com.example.ecommerce.entitites.user.User;
@@ -48,8 +47,8 @@ public final class TestDataUtil {
                 .build();
     }
 
-    public static CategoryResponse categoryResponse() {
-        return CategoryResponse.builder()
+    public static CategorySummaryResponse categoryResponse() {
+        return CategorySummaryResponse.builder()
                 .id(category().getId())
                 .name(category().getName())
                 .sizeType(category().getSizeType())

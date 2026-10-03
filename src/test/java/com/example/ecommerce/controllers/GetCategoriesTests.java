@@ -1,10 +1,8 @@
 package com.example.ecommerce.controllers;
 
 import com.example.ecommerce.BaseTest.category.BaseTestCategory;
-import com.example.ecommerce.dtos.category.CategoryResponse;
-import com.example.ecommerce.dtos.category.CategoryWithChildrenProjection;
-import com.example.ecommerce.entitites.product.productEntities.Category;
-import com.example.ecommerce.exceptions.UserNotFoundException;
+import com.example.ecommerce.dtos.category.CategorySummaryResponse;
+import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.services.category.CategoryService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,8 +81,8 @@ public class GetCategoriesTests extends BaseTestCategory {
 
     @Test
     void shouldReturnHttp200WhenRequestIsValid() throws Exception {
-        Page<CategoryResponse> page =
-                new PageImpl<>(List.of(categoryResponse));
+        Page<CategorySummaryResponse> page =
+                new PageImpl<>(List.of(categorySummaryResponse));
 
         when(categoryService.getCategories(any(Authentication.class), any(), any(Pageable.class)))
                 .thenReturn(page);

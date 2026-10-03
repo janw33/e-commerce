@@ -1,4 +1,4 @@
-package com.example.ecommerce.exceptions;
+package com.example.ecommerce.exceptions.validation;
 
 import lombok.*;
 
