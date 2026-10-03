@@ -10,7 +10,7 @@ public abstract class BaseTestUser {
     protected UserResponse userResponse;
 
     @BeforeEach
-    public void setUp() {
+    public void setupBase() {
         user = TestDataUtil.user();
         userResponse = TestDataUtil.userResponse();
     }
