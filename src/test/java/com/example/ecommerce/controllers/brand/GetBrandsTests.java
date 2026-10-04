@@ -52,7 +52,7 @@ public class GetBrandsTests extends BaseTestBrand {
 
     private void performGet(Long categoryId, ResultMatcher... matchers) throws Exception {
         var result = mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/v1/brand/" + categoryId)
+                MockMvcRequestBuilders.get("/api/v1/brand?categoryId=" + categoryId)
                         .with(authenticatedUser())
         );
 
