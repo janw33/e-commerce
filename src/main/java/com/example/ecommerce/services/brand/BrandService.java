@@ -1,18 +1,14 @@
 package com.example.ecommerce.services.brand;
 
 import com.example.ecommerce.dtos.brand.BrandResponse;
-import com.example.ecommerce.entitites.product.productEntities.Brand;
 import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.mappers.brand.BrandMapper;
 import com.example.ecommerce.providers.CurrentUserProvider;
-import com.example.ecommerce.repositories.brand.BrandRepository;
+import com.example.ecommerce.repository.brand.BrandRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class BrandService {
@@ -26,10 +22,10 @@ public class BrandService {
         this.brandMapper = brandMapper;
     }
 
-    public Page<BrandResponse> getBrands(Authentication authentication, Long categoryId, Pageable pageable) {
+    public Page<BrandResponse> getBrands(Authentication authentication, Long categoryId, String search, Pageable pageable) {
         currentUserProvider.get(authentication);
 
-        return brandRepository.findAllByCategoryId(categoryId, pageable).map(brandMapper::toResponse);
+        return brandRepository.findAllByCategoryId(categoryId, search, pageable).map(brandMapper::toResponse);
     }
 
     public BrandResponse getBrand(Authentication authentication, Long brandId) {

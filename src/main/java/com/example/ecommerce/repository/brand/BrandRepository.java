@@ -1,4 +1,4 @@
-package com.example.ecommerce.repositories.brand;
+package com.example.ecommerce.repository.brand;
 
 import com.example.ecommerce.entitites.product.productEntities.Brand;
 import org.springframework.data.domain.Page;
@@ -8,8 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 public interface BrandRepository extends JpaRepository<Brand, Long> {
     @Query(
@@ -18,6 +16,7 @@ public interface BrandRepository extends JpaRepository<Brand, Long> {
             FROM Brand b
             JOIN Product p ON p.brand = b
             WHERE p.category.id = :categoryId
+            AND b.name LIKE '%' || COALESCE(:search, '') || '%'
             GROUP BY b.id, b.name
             ORDER BY COUNT(p.id) DESC
         """,
@@ -26,10 +25,12 @@ public interface BrandRepository extends JpaRepository<Brand, Long> {
                         FROM Brand b
                         JOIN Product p ON p.brand = b
                         WHERE p.category.id = :categoryId
+                        AND b.name LIKE '%' || COALESCE(:search, '') || '%'
                     """
     )
     Page<Brand> findAllByCategoryId(
             @Param("categoryId") Long categoryId,
+            @Param("search") String search,
             Pageable pageable
     );
 }

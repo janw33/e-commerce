@@ -2,15 +2,11 @@ package com.example.ecommerce.services.brand;
 
 import com.example.ecommerce.BaseTest.brand.BaseTestBrand;
 import com.example.ecommerce.dtos.brand.BrandResponse;
-import com.example.ecommerce.dtos.category.CategorySummaryResponse;
 import com.example.ecommerce.entitites.product.productEntities.Brand;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.mappers.brand.BrandMapper;
-import com.example.ecommerce.mappers.category.CategoryMapper;
 import com.example.ecommerce.providers.CurrentUserProvider;
-import com.example.ecommerce.repositories.brand.BrandRepository;
-import com.example.ecommerce.repositories.category.CategoryRepository;
-import com.example.ecommerce.services.category.CategoryService;
+import com.example.ecommerce.repository.brand.BrandRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,23 +55,23 @@ public class GetBrandsTests extends BaseTestBrand {
 
         assertThrows(
                 UserNotFoundException.class,
-                () -> brandService.getBrands(authentication, category.getId(), Pageable.unpaged())
+                () -> brandService.getBrands(authentication, category.getId(), null, Pageable.unpaged())
         );
 
-        verify(brandRepository, never()).findAllByCategoryId(category.getId(), Pageable.unpaged());
+        verify(brandRepository, never()).findAllByCategoryId(category.getId(), null, Pageable.unpaged());
     }
 
     @Test
-    void shouldReturnBrands() {
+    void shouldReturnBrandsWithoutSearch() {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
         Page<Brand> page =  new PageImpl<>(List.of(brand));
 
-        when(brandRepository.findAllByCategoryId(category.getId(), Pageable.unpaged()))
+        when(brandRepository.findAllByCategoryId(category.getId(), null, Pageable.unpaged()))
                .thenReturn(page);
 
-        Page<BrandResponse> result = brandService.getBrands(authentication, category.getId(), Pageable.unpaged());
+        Page<BrandResponse> result = brandService.getBrands(authentication, category.getId(), null, Pageable.unpaged());
 
         assertEquals(1, result.getTotalElements());
 
@@ -84,6 +80,28 @@ public class GetBrandsTests extends BaseTestBrand {
         assertEquals(brand.getId(), first.getId());
         assertEquals(brand.getName(), first.getName());
 
-        verify(brandRepository).findAllByCategoryId(category.getId(), Pageable.unpaged());
+        verify(brandRepository).findAllByCategoryId(category.getId(), null, Pageable.unpaged());
+    }
+
+    @Test
+    void shouldReturnBrandsWhenSearchIsProvided() {
+        when(currentUserProvider.get(authentication))
+                .thenReturn(user);
+
+        Page<Brand> page =  new PageImpl<>(List.of(brand));
+
+        when(brandRepository.findAllByCategoryId(category.getId(), "nike", Pageable.unpaged()))
+                .thenReturn(page);
+
+        Page<BrandResponse> result = brandService.getBrands(authentication, category.getId(), "nike", Pageable.unpaged());
+
+        assertEquals(1, result.getTotalElements());
+
+        BrandResponse first = result.getContent().getFirst();
+
+        assertEquals(brand.getId(), first.getId());
+        assertEquals(brand.getName(), first.getName());
+
+        verify(brandRepository).findAllByCategoryId(category.getId(), "nike", Pageable.unpaged());
     }
 }

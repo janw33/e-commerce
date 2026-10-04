@@ -1,4 +1,4 @@
-package com.example.ecommerce.repositories.category;
+package com.example.ecommerce.repository.category;
 
 import com.example.ecommerce.dtos.category.DetailsCategoryWithChildrenProjection;
 import com.example.ecommerce.dtos.category.SummaryCategoryWithChildrenProjection;

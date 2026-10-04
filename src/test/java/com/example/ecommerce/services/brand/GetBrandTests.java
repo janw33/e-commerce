@@ -6,13 +6,12 @@ import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.mappers.brand.BrandMapper;
 import com.example.ecommerce.providers.CurrentUserProvider;
-import com.example.ecommerce.repositories.brand.BrandRepository;
+import com.example.ecommerce.repository.brand.BrandRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 
 import java.util.Optional;

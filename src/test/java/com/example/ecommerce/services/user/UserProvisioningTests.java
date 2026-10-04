@@ -2,7 +2,7 @@ package com.example.ecommerce.services.user;
 
 import com.example.ecommerce.BaseTest.user.BaseTestUser;
 import com.example.ecommerce.entitites.user.User;
-import com.example.ecommerce.repositories.user.UserRepository;
+import com.example.ecommerce.repository.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

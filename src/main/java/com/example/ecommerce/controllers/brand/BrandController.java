@@ -20,10 +20,11 @@ public class BrandController {
     @GetMapping
     public Page<BrandResponse> getBrands(
             Authentication authentication,
-            @RequestParam Long categoryId,
+            @RequestParam() Long categoryId,
+            @RequestParam(required = false) String search,
             @PageableDefault(size = 30) Pageable pageable
     ) {
-        return brandService.getBrands(authentication, categoryId, pageable);
+        return brandService.getBrands(authentication, categoryId, search, pageable);
     }
 
     @GetMapping(path = "/{brandId}")

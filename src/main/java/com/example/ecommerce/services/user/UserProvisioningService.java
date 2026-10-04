@@ -5,7 +5,7 @@ import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
-import com.example.ecommerce.repositories.user.UserRepository;
+import com.example.ecommerce.repository.user.UserRepository;
 
 @Service
 public class UserProvisioningService {

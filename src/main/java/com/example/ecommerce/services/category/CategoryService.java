@@ -5,7 +5,7 @@ import com.example.ecommerce.dtos.category.CategorySummaryResponse;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
 import com.example.ecommerce.mappers.category.CategoryMapper;
 import com.example.ecommerce.providers.CurrentUserProvider;
-import com.example.ecommerce.repositories.category.CategoryRepository;
+import com.example.ecommerce.repository.category.CategoryRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
