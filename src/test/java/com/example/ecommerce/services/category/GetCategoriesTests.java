@@ -5,7 +5,7 @@ import com.example.ecommerce.dtos.category.CategorySummaryResponse;
 import com.example.ecommerce.dtos.category.SummaryCategoryWithChildrenProjection;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.mappers.category.CategoryMapper;
-import com.example.ecommerce.providers.user.CurrentUserProvider;
+import com.example.ecommerce.providers.CurrentUserProvider;
 import com.example.ecommerce.repositories.category.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

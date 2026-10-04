@@ -1,20 +1,11 @@
 package com.example.ecommerce.security;
 
 import com.example.ecommerce.BaseTest.category.BaseTestCategory;
-import com.example.ecommerce.BaseTest.user.BaseTestUser;
-import com.example.ecommerce.config.SecurityConfig;
-import com.example.ecommerce.controllers.auth.AuthController;
-import com.example.ecommerce.dtos.auth.UserResponse;
-import com.example.ecommerce.mappers.user.UserMapper;
-import com.example.ecommerce.providers.user.CurrentUserProvider;
 import com.example.ecommerce.services.category.CategoryService;
-import com.example.ecommerce.services.user.AuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 

@@ -3,7 +3,7 @@ package com.example.ecommerce.services.user;
 import com.example.ecommerce.dtos.auth.UserResponse;
 import com.example.ecommerce.entitites.user.User;
 import com.example.ecommerce.mappers.user.UserMapper;
-import com.example.ecommerce.providers.user.CurrentUserProvider;
+import com.example.ecommerce.providers.CurrentUserProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 

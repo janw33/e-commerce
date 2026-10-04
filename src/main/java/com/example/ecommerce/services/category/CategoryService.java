@@ -2,10 +2,9 @@ package com.example.ecommerce.services.category;
 
 import com.example.ecommerce.dtos.category.CategoryDetailsResponse;
 import com.example.ecommerce.dtos.category.CategorySummaryResponse;
-import com.example.ecommerce.dtos.category.DetailsCategoryWithChildrenProjection;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
 import com.example.ecommerce.mappers.category.CategoryMapper;
-import com.example.ecommerce.providers.user.CurrentUserProvider;
+import com.example.ecommerce.providers.CurrentUserProvider;
 import com.example.ecommerce.repositories.category.CategoryRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
