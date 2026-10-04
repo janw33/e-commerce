@@ -1,6 +1,7 @@
 package com.example.ecommerce;
 
 import com.example.ecommerce.dtos.auth.UserResponse;
+import com.example.ecommerce.dtos.brand.BrandResponse;
 import com.example.ecommerce.dtos.category.CategoryDetailsResponse;
 import com.example.ecommerce.dtos.category.CategorySummaryResponse;
 import com.example.ecommerce.entitites.product.enums.SizeType;
@@ -82,6 +83,13 @@ public final class TestDataUtil {
         return Brand.builder()
                 .id(1L)
                 .name("test")
+                .build();
+    }
+
+    public static BrandResponse brandResponse() {
+        return BrandResponse.builder()
+                .id(brand().getId())
+                .name(brand().getName())
                 .build();
     }
 }
