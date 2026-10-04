@@ -6,10 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/brand")
@@ -20,12 +17,20 @@ public class BrandController {
         this.brandService = brandService;
     }
 
-    @GetMapping(path = "/{categoryId}")
+    @GetMapping
     public Page<BrandResponse> getBrands(
             Authentication authentication,
-            @PathVariable Long categoryId,
+            @RequestParam Long categoryId,
             @PageableDefault(size = 30) Pageable pageable
     ) {
         return brandService.getBrands(authentication, categoryId, pageable);
+    }
+
+    @GetMapping(path = "/{brandId}")
+    public BrandResponse getBrand(
+            Authentication authentication,
+            @PathVariable Long brandId
+    ) {
+        return brandService.getBrand(authentication, brandId);
     }
 }

@@ -2,6 +2,7 @@ package com.example.ecommerce.services.brand;
 
 import com.example.ecommerce.dtos.brand.BrandResponse;
 import com.example.ecommerce.entitites.product.productEntities.Brand;
+import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.mappers.brand.BrandMapper;
 import com.example.ecommerce.providers.CurrentUserProvider;
 import com.example.ecommerce.repositories.brand.BrandRepository;
@@ -29,5 +30,12 @@ public class BrandService {
         currentUserProvider.get(authentication);
 
         return brandRepository.findAllByCategoryId(categoryId, pageable).map(brandMapper::toResponse);
+    }
+
+    public BrandResponse getBrand(Authentication authentication, Long brandId) {
+        currentUserProvider.get(authentication);
+
+        return brandMapper.toResponse(brandRepository.findById(brandId)
+                .orElseThrow(BrandNotFoundException::new));
     }
 }

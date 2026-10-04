@@ -1,6 +1,7 @@
 package com.example.ecommerce.config;
 
 import com.example.ecommerce.dtos.error.ErrorResponse;
+import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.exceptions.validation.ValidationErrorResponse;
@@ -69,6 +70,22 @@ public class GlobalExceptionHandler {
         ErrorResponse error = ErrorResponse.builder()
                 .status(HttpStatus.NOT_FOUND.value())
                 .error("CATEGORY_NOT_FOUND")
+                .message(exception.getMessage())
+                .path(request.getRequestURI())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(BrandNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleBrandNotFoundException(
+            BrandNotFoundException exception,
+            HttpServletRequest request
+    ) {
+        ErrorResponse error = ErrorResponse.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .error("BRAND_NOT_FOUND")
                 .message(exception.getMessage())
                 .path(request.getRequestURI())
                 .timestamp(LocalDateTime.now())
