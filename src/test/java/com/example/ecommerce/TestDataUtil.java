@@ -4,13 +4,20 @@ import com.example.ecommerce.dtos.auth.UserResponse;
 import com.example.ecommerce.dtos.brand.BrandResponse;
 import com.example.ecommerce.dtos.category.CategoryDetailsResponse;
 import com.example.ecommerce.dtos.category.CategorySummaryResponse;
+import com.example.ecommerce.dtos.image.CreateImageRequest;
+import com.example.ecommerce.dtos.image.ImageResponse;
+import com.example.ecommerce.dtos.product.CreateProductRequest;
 import com.example.ecommerce.entitites.product.Product;
-import com.example.ecommerce.entitites.product.enums.SizeType;
+import com.example.ecommerce.entitites.product.enums.*;
 import com.example.ecommerce.entitites.product.productEntities.Brand;
 import com.example.ecommerce.entitites.product.productEntities.Category;
+import com.example.ecommerce.entitites.product.productEntities.Image;
 import com.example.ecommerce.entitites.user.User;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 public final class TestDataUtil {
     private static LocalDateTime testDate() {
@@ -91,6 +98,62 @@ public final class TestDataUtil {
         return BrandResponse.builder()
                 .id(brand().getId())
                 .name(brand().getName())
+                .build();
+    }
+
+    public static Image image() {
+        return Image.builder()
+                .id(1L)
+                .product(product())
+                .url("test")
+                .position(0)
+                .build();
+    }
+
+    public static CreateImageRequest createImageRequest() {
+        return new CreateImageRequest(image().getUrl());
+    }
+
+    public static ImageResponse imageResponse() {return new ImageResponse(image().getUrl());}
+
+    public static Product product() {
+        return Product.builder()
+                .id(1L)
+                .seller(user())
+                .category(category())
+                .brand(brand())
+                .title("test")
+                .description("test")
+                .price(BigDecimal.TEN)
+                .currency(Currency.EUR)
+                .colors(Set.of(Color.BLUE))
+                .condition(Condition.NEW)
+                .materials(Set.of(Material.COTTON))
+                .size(Size.ONE_SIZE)
+                .shippingSize(ShippingSize.MEDIUM)
+                .viewCount(0L)
+                .status(Status.ACTIVE)
+                .createdAt(testDate())
+                .updatedAt(testDate())
+                .deletedAt(null)
+                .soldAt(null)
+                .build();
+    }
+
+    public static CreateProductRequest createProductRequest() {
+        return CreateProductRequest.builder()
+                .images(List.of(createImageRequest()))
+                .title(product().getTitle())
+                .description(product().getDescription())
+                .categoryId(category().getId())
+                .brandId(brand().getId())
+                .size(product().getSize())
+                .shippingSize(product().getShippingSize())
+                .condition(product().getCondition())
+                .colors(product().getColors())
+                .materials(product().getMaterials())
+                .price(product().getPrice())
+                .currency(product().getCurrency())
                 .build();
     }
 }

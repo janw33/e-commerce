@@ -1,0 +1,185 @@
+package com.example.ecommerce.services.product;
+
+import com.example.ecommerce.BaseTest.product.BaseTestProduct;
+import com.example.ecommerce.dtos.product.ProductResponse;
+import com.example.ecommerce.entitites.product.productEntities.Image;
+import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
+import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
+import com.example.ecommerce.exceptions.user.UserNotFoundException;
+import com.example.ecommerce.mappers.image.ImageMapper;
+import com.example.ecommerce.mappers.product.ProductMapper;
+import com.example.ecommerce.providers.CurrentUserProvider;
+import com.example.ecommerce.repository.brand.BrandRepository;
+import com.example.ecommerce.repository.category.CategoryRepository;
+import com.example.ecommerce.repository.image.ImageRepository;
+import com.example.ecommerce.repository.like.LikeRepository;
+import com.example.ecommerce.repository.product.ProductRepository;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+public class CreateProductTests extends BaseTestProduct {
+    @Mock
+    private CurrentUserProvider currentUserProvider;
+
+    @Mock
+    private Authentication authentication;
+
+    @Mock
+    private ProductRepository productRepository;
+
+    @Mock
+    private ImageRepository imageRepository;
+
+    @Mock
+    private CategoryRepository categoryRepository;
+
+    @Mock
+    private BrandRepository brandRepository;
+
+    @Mock
+    private LikeRepository likeRepository;
+
+    private final ProductMapper productMapper = new ProductMapper();
+
+    private final ImageMapper imageMapper = new ImageMapper();
+
+    private ProductService productService;
+
+    @BeforeEach
+    void setUp() {
+        productService = new ProductService(currentUserProvider,
+                productRepository,
+                imageRepository,
+                categoryRepository,
+                brandRepository,
+                likeRepository,
+                productMapper,
+                imageMapper
+            );
+    }
+
+    @Test
+    void shouldThrowUserNotFoundExceptionWhenUserDoesntExists() {
+        when(currentUserProvider.get(authentication))
+                .thenThrow(new UserNotFoundException());
+
+        assertThrows(
+                UserNotFoundException.class,
+                () -> productService.createProduct(createProductRequest, authentication)
+        );
+
+        verify(productRepository, never()).save(any());
+        verify(imageRepository, never()).saveAll(any());
+    }
+
+    @Test
+    void shouldThrowCategoryNotFoundExceptionWhenCategoryDoesntExists() {
+        when(currentUserProvider.get(authentication))
+                .thenReturn(user);
+
+        when(categoryRepository.findById(category.getId()))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                CategoryNotFoundException.class,
+                () -> productService.createProduct(createProductRequest, authentication)
+        );
+
+        verify(productRepository, never()).save(any());
+        verify(imageRepository, never()).saveAll(any());
+    }
+
+    @Test
+    void shouldThrowBrandNotFoundExceptionWhenBrandDoesntExists() {
+        when(currentUserProvider.get(authentication))
+                .thenReturn(user);
+
+        when(categoryRepository.findById(category.getId()))
+                .thenReturn(Optional.of(category));
+
+        when(brandRepository.findById(brand.getId()))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                BrandNotFoundException.class,
+                () -> productService.createProduct(createProductRequest, authentication)
+        );
+
+        verify(productRepository, never()).save(any());
+        verify(imageRepository, never()).saveAll(any());
+    }
+
+    @Test
+    void shouldCreateProduct() {
+        when(currentUserProvider.get(authentication))
+                .thenReturn(user);
+
+        when(categoryRepository.findById(category.getId()))
+                .thenReturn(Optional.of(category));
+
+        when(brandRepository.findById(brand.getId()))
+                .thenReturn(Optional.of(brand));
+
+        when(productRepository.save(any()))
+                .thenReturn(product);
+
+        when(imageRepository.saveAll(any()))
+                .thenReturn(List.of(image));
+
+        ProductResponse result = productService.createProduct(createProductRequest, authentication);
+
+        assertEquals(product.getId(), result.getId());
+        assertEquals(product.getSeller().getId(), result.getSellerId());
+        assertEquals(product.getSeller().getFirstName(), result.getSellerUsername());
+        assertEquals(category.getId(), result.getCategoryId());
+        assertEquals(brand.getId(), result.getBrandId());
+        assertEquals(brand.getName(), result.getBrandName());
+        assertEquals(product.getTitle(), result.getTitle());
+        assertEquals(product.getDescription(), result.getDescription());
+        assertEquals(product.getPrice(), result.getPrice());
+        assertEquals(product.getCurrency(), result.getCurrency());
+        assertEquals(product.getColors(), result.getColors());
+        assertEquals(product.getCondition(), result.getCondition());
+        assertEquals(product.getMaterials(), result.getMaterials());
+        assertEquals(product.getSize(), result.getSize());
+        assertEquals(product.getShippingSize(), result.getShippingSize());
+        assertEquals(product.getViewCount(), result.getViewCount());
+        assertEquals(0, result.getLikeCount());
+        assertEquals(product.getStatus(), result.getStatus());
+        assertEquals(product.getCreatedAt(), result.getCreatedAt());
+        assertEquals(product.getUpdatedAt(), result.getUpdatedAt());
+        assertEquals(product.getDeletedAt(), result.getDeletedAt());
+        assertEquals(product.getSoldAt(), result.getSoldAt());
+        assertNotNull(result.getImages());
+        assertEquals(1, result.getImages().size());
+
+        assertEquals(image.getUrl(), result.getImages().getFirst().getUrl());
+
+        ArgumentCaptor<List<Image>> captor = ArgumentCaptor.forClass(List.class);
+
+        verify(imageRepository).saveAll(captor.capture());
+
+        List<Image> savedImages = captor.getValue();
+
+        assertEquals(1, savedImages.size());
+        assertEquals(0, savedImages.getFirst().getPosition());
+
+        verify(productRepository).save(any());
+        verify(imageRepository).saveAll(any());
+    }
+}

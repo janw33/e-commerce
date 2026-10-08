@@ -31,21 +31,21 @@ public class ProductService {
     private final ImageRepository imageRepository;
     private final CategoryRepository categoryRepository;
     private final BrandRepository brandRepository;
+    private final LikeRepository likeRepository;
     private final ProductMapper productMapper;
     private final ImageMapper imageMapper;
-    private final LikeRepository likeRepository;
 
     public ProductService(CurrentUserProvider currentUserProvider, ProductRepository productRepository, ImageRepository imageRepository,
-                          CategoryRepository categoryRepository, BrandRepository brandRepository, ProductMapper productMapper,
-                          ImageMapper imageMapper, LikeRepository likeRepository) {
+                          CategoryRepository categoryRepository, BrandRepository brandRepository, LikeRepository likeRepository,
+                          ProductMapper productMapper, ImageMapper imageMapper) {
         this.currentUserProvider = currentUserProvider;
         this.productRepository = productRepository;
         this.imageRepository = imageRepository;
         this.categoryRepository = categoryRepository;
         this.brandRepository = brandRepository;
+        this.likeRepository = likeRepository;
         this.productMapper = productMapper;
         this.imageMapper = imageMapper;
-        this.likeRepository = likeRepository;
     }
 
     @Transactional

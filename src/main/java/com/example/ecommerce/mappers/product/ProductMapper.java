@@ -40,13 +40,13 @@ public class ProductMapper {
                 .sellerUsername(seller.getFirstName())
                 .categoryId(product.getCategory().getId())
                 .brandId(brand.getId())
-                .brandName(brand.getName())
+                .brandName(brand.getName()) //
                 .title(product.getTitle())
                 .description(product.getDescription())
-                .price(product.getPrice())
+                .price(product.getPrice()) //
                 .currency(product.getCurrency())
                 .colors(product.getColors())
-                .condition(product.getCondition())
+                .condition(product.getCondition()) //
                 .materials(product.getMaterials())
                 .size(product.getSize())
                 .shippingSize(product.getShippingSize())
