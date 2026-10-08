@@ -4,6 +4,7 @@ import com.example.ecommerce.dtos.auth.UserResponse;
 import com.example.ecommerce.dtos.brand.BrandResponse;
 import com.example.ecommerce.dtos.category.CategoryDetailsResponse;
 import com.example.ecommerce.dtos.category.CategorySummaryResponse;
+import com.example.ecommerce.entitites.product.Product;
 import com.example.ecommerce.entitites.product.enums.SizeType;
 import com.example.ecommerce.entitites.product.productEntities.Brand;
 import com.example.ecommerce.entitites.product.productEntities.Category;

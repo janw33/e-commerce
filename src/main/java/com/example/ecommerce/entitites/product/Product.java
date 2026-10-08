@@ -26,7 +26,6 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relations
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
@@ -39,7 +38,6 @@ public class Product {
     @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
 
-    // Basic information
     @Column(nullable = false, length = 100)
     private String title;
 
@@ -53,21 +51,20 @@ public class Product {
     @Column(nullable = false, length = 3)
     private Currency currency;
 
-    // Product attributes
-    @ElementCollection(targetClass = Color.class)
+    @ElementCollection
     @Enumerated(EnumType.STRING)
     @CollectionTable(
             name = "product_colors",
             joinColumns = @JoinColumn(name = "product_id")
     )
-    @Column(name = "color")
+    @Column(nullable = false, name = "color")
     private Set<Color> colors;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Condition condition;
 
-    @ElementCollection(targetClass = Material.class)
+    @ElementCollection
     @Enumerated(EnumType.STRING)
     @CollectionTable(
             name = "product_materials",
@@ -84,7 +81,6 @@ public class Product {
     @Column(nullable = false)
     private ShippingSize shippingSize;
 
-    // Product state
     @Builder.Default
     @Column(nullable = false)
     private Long viewCount = 0L;
@@ -94,7 +90,6 @@ public class Product {
     @Column(nullable = false, length = 30)
     private Status status = Status.ACTIVE;
 
-    // Timestamps
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
