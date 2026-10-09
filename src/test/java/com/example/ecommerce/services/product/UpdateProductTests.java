@@ -93,7 +93,7 @@ public class UpdateProductTests extends BaseTestProduct {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findByUserAndIdAndStatusActive(user, product.getId()))
+        when(productRepository.findBySellerAndIdAndStatusActive(user, product.getId()))
                 .thenReturn(Optional.empty());
 
         assertThrows(
@@ -109,7 +109,7 @@ public class UpdateProductTests extends BaseTestProduct {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findByUserAndIdAndStatusActive(user, product.getId()))
+        when(productRepository.findBySellerAndIdAndStatusActive(user, product.getId()))
                 .thenReturn(Optional.of(product));
 
         when(categoryRepository.findById(updateProductRequest.getCategoryId()))
@@ -128,7 +128,7 @@ public class UpdateProductTests extends BaseTestProduct {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findByUserAndIdAndStatusActive(user, product.getId()))
+        when(productRepository.findBySellerAndIdAndStatusActive(user, product.getId()))
                 .thenReturn(Optional.of(product));
 
         when(categoryRepository.findById(updateProductRequest.getCategoryId()))
@@ -150,7 +150,7 @@ public class UpdateProductTests extends BaseTestProduct {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findByUserAndIdAndStatusActive(user, product.getId()))
+        when(productRepository.findBySellerAndIdAndStatusActive(user, product.getId()))
                 .thenReturn(Optional.of(product));
 
         when(categoryRepository.findById(updateProductRequest.getCategoryId()))
@@ -206,7 +206,7 @@ public class UpdateProductTests extends BaseTestProduct {
         assertEquals(updateProductRequest.getImages().getFirst().getUrl(), savedImages.getFirst().getUrl());
         assertEquals(0, savedImages.getFirst().getPosition());
 
-        verify(productRepository).findByUserAndIdAndStatusActive(user, product.getId());
+        verify(productRepository).findBySellerAndIdAndStatusActive(user, product.getId());
         verify(categoryRepository).findById(updateProductRequest.getCategoryId());
         verify(brandRepository).findById(updateProductRequest.getBrandId());
         verify(likeRepository).countByProductId(product.getId());

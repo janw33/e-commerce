@@ -17,7 +17,9 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateProductRequest {
+
     @Valid
+    @NotEmpty(message = "Images cannot be empty")
     @Size(max = 20, message = "Number of images must not exceed 20")
     private List<CreateImageRequest> images;
 

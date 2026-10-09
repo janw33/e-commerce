@@ -20,7 +20,6 @@ import com.example.ecommerce.repository.image.ImageRepository;
 import com.example.ecommerce.repository.like.LikeRepository;
 import com.example.ecommerce.repository.product.ProductRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -78,7 +77,7 @@ public class ProductService {
     public ProductResponse updateProduct(UpdateProductRequest request, Authentication authentication, Long id) {
         User currentUser = currentUserProvider.get(authentication);
 
-        Product product = productRepository.findByUserAndIdAndStatusActive(currentUser, id)
+        Product product = productRepository.findBySellerAndIdAndStatusActive(currentUser, id)
                 .orElseThrow(ProductNotFoundException::new);
 
         Category category = categoryRepository.findById(request.getCategoryId())

@@ -255,8 +255,18 @@ public class CreateProductTests extends BaseTestProduct {
     }
 
     @Test
-    void shouldReturnHttp400WhenColorsAreEmpty() throws Exception {
+    void shouldReturnHttp400WhenColorsAreNull() throws Exception {
         createProductRequest.setColors(null);
+        performPost(
+                createProductRequest,
+                status().isBadRequest(),
+                jsonPath("$.error").value("VALIDATION_ERROR"),
+                jsonPath("$.validationErrors.colors").value("Colors cannot be empty"));
+    }
+
+    @Test
+    void shouldReturnHttp400WhenColorsAreEmpty() throws Exception {
+        createProductRequest.setColors(Set.of());
         performPost(
                 createProductRequest,
                 status().isBadRequest(),
