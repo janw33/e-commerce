@@ -1,8 +1,10 @@
 package com.example.ecommerce.BaseTest.product;
 
 import com.example.ecommerce.TestDataUtil;
+import com.example.ecommerce.dtos.image.CreateImageRequest;
 import com.example.ecommerce.dtos.image.ImageResponse;
 import com.example.ecommerce.dtos.product.CreateProductRequest;
+import com.example.ecommerce.dtos.product.ProductResponse;
 import com.example.ecommerce.entitites.product.Product;
 import com.example.ecommerce.entitites.product.productEntities.Brand;
 import com.example.ecommerce.entitites.product.productEntities.Category;
@@ -18,6 +20,8 @@ public abstract class BaseTestProduct {
     protected Image image;
 
     protected CreateProductRequest createProductRequest;
+    protected ProductResponse productResponse;
+    protected CreateImageRequest createImageRequest;
     protected ImageResponse imageResponse;
     @BeforeEach
     public void setupBase() {
@@ -28,6 +32,8 @@ public abstract class BaseTestProduct {
         image = TestDataUtil.image();
 
         createProductRequest = TestDataUtil.createProductRequest();
+        productResponse = TestDataUtil.productResponse();
+        createImageRequest = TestDataUtil.createImageRequest();
         imageResponse = TestDataUtil.imageResponse();
     }
 }

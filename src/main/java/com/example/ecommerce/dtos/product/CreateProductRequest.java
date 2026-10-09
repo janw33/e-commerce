@@ -23,11 +23,11 @@ public class CreateProductRequest {
     private List<CreateImageRequest> images;
 
     @NotBlank(message = "Title cannot be blank")
-    @Size(min = 5, max = 100)
+    @Size(min = 5, max = 100, message = "Title must be between 5 and 100 characters")
     private String title;
 
     @NotBlank(message = "Description cannot be blank")
-    @Size(min = 5, max = 750)
+    @Size(min = 5, max = 750, message = "Description must be between 5 and 750 characters")
     private String description;
 
     @NotNull(message = "Category id cannot be null")

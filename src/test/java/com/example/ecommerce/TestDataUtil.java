@@ -7,6 +7,7 @@ import com.example.ecommerce.dtos.category.CategorySummaryResponse;
 import com.example.ecommerce.dtos.image.CreateImageRequest;
 import com.example.ecommerce.dtos.image.ImageResponse;
 import com.example.ecommerce.dtos.product.CreateProductRequest;
+import com.example.ecommerce.dtos.product.ProductResponse;
 import com.example.ecommerce.entitites.product.Product;
 import com.example.ecommerce.entitites.product.enums.*;
 import com.example.ecommerce.entitites.product.productEntities.Brand;
@@ -122,8 +123,8 @@ public final class TestDataUtil {
                 .seller(user())
                 .category(category())
                 .brand(brand())
-                .title("test")
-                .description("test")
+                .title("test1")
+                .description("test1")
                 .price(BigDecimal.TEN)
                 .currency(Currency.EUR)
                 .colors(Set.of(Color.BLUE))
@@ -145,8 +146,8 @@ public final class TestDataUtil {
                 .images(List.of(createImageRequest()))
                 .title(product().getTitle())
                 .description(product().getDescription())
-                .categoryId(category().getId())
-                .brandId(brand().getId())
+                .categoryId(product().getCategory().getId())
+                .brandId(product().getBrand().getId())
                 .size(product().getSize())
                 .shippingSize(product().getShippingSize())
                 .condition(product().getCondition())
@@ -154,6 +155,34 @@ public final class TestDataUtil {
                 .materials(product().getMaterials())
                 .price(product().getPrice())
                 .currency(product().getCurrency())
+                .build();
+    }
+
+    public static ProductResponse productResponse() {
+        return ProductResponse.builder()
+                .id(product().getId())
+                .sellerId(product().getSeller().getId())
+                .sellerUsername(product().getSeller().getFirstName())
+                .categoryId(product().getCategory().getId())
+                .brandId(product().getBrand().getId())
+                .brandName(product().getBrand().getName())
+                .title(product().getTitle())
+                .description(product().getDescription())
+                .price(product().getPrice())
+                .currency(product().getCurrency())
+                .colors(product().getColors())
+                .condition(product().getCondition())
+                .materials(product().getMaterials())
+                .size(product().getSize())
+                .shippingSize(product().getShippingSize())
+                .viewCount(product().getViewCount())
+                .likeCount(0)
+                .status(product().getStatus())
+                .createdAt(testDate())
+                .updatedAt(testDate())
+                .deletedAt(null)
+                .soldAt(null)
+                .images(List.of(imageResponse()))
                 .build();
     }
 }

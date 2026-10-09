@@ -146,9 +146,9 @@ public class CreateProductTests extends BaseTestProduct {
         assertEquals(product.getId(), result.getId());
         assertEquals(product.getSeller().getId(), result.getSellerId());
         assertEquals(product.getSeller().getFirstName(), result.getSellerUsername());
-        assertEquals(category.getId(), result.getCategoryId());
-        assertEquals(brand.getId(), result.getBrandId());
-        assertEquals(brand.getName(), result.getBrandName());
+        assertEquals(product.getCategory().getId(), result.getCategoryId());
+        assertEquals(product.getBrand().getId(), result.getBrandId());
+        assertEquals(product.getBrand().getName(), result.getBrandName());
         assertEquals(product.getTitle(), result.getTitle());
         assertEquals(product.getDescription(), result.getDescription());
         assertEquals(product.getPrice(), result.getPrice());
