@@ -2,15 +2,13 @@ package com.example.ecommerce.controllers.product;
 
 import com.example.ecommerce.dtos.product.CreateProductRequest;
 import com.example.ecommerce.dtos.product.ProductResponse;
+import com.example.ecommerce.dtos.product.UpdateProductRequest;
 import com.example.ecommerce.services.product.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/products")
@@ -27,5 +25,14 @@ public class ProductController {
             Authentication authentication
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(request, authentication));
+    }
+
+    @PutMapping(path = "/{id}")
+    public ProductResponse updateProduct(
+            @RequestBody @Valid UpdateProductRequest request,
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        return productService.updateProduct(request, authentication, id);
     }
 }
