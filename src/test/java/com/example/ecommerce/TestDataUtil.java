@@ -8,6 +8,7 @@ import com.example.ecommerce.dtos.image.CreateImageRequest;
 import com.example.ecommerce.dtos.image.ImageResponse;
 import com.example.ecommerce.dtos.product.CreateProductRequest;
 import com.example.ecommerce.dtos.product.ProductResponse;
+import com.example.ecommerce.dtos.product.UpdateProductRequest;
 import com.example.ecommerce.entitites.product.Product;
 import com.example.ecommerce.entitites.product.enums.*;
 import com.example.ecommerce.entitites.product.productEntities.Brand;
@@ -183,6 +184,23 @@ public final class TestDataUtil {
                 .deletedAt(null)
                 .soldAt(null)
                 .images(List.of(imageResponse()))
+                .build();
+    }
+
+    public static UpdateProductRequest updateProductRequest() {
+        return UpdateProductRequest.builder()
+                .images(List.of(createImageRequest()))
+                .title(product().getTitle())
+                .description(product().getDescription())
+                .categoryId(product().getCategory().getId())
+                .brandId(product().getBrand().getId())
+                .size(product().getSize())
+                .shippingSize(product().getShippingSize())
+                .condition(product().getCondition())
+                .colors(product().getColors())
+                .materials(product().getMaterials())
+                .price(product().getPrice())
+                .currency(product().getCurrency())
                 .build();
     }
 }
