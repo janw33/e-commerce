@@ -1,5 +1,6 @@
 package com.example.ecommerce.repository.product;
 
+import com.example.ecommerce.dtos.product.MyProductSummaryProjection;
 import com.example.ecommerce.dtos.product.ProductSummaryProjection;
 import com.example.ecommerce.entitites.product.Product;
 import com.example.ecommerce.entitites.product.enums.*;
@@ -136,4 +137,35 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query (value = "SELECT p FROM Product p WHERE p.seller = :currentUser AND p.id = :id AND p.status = 'SOLD'")
     Optional<Product> findBySellerAndIdAndStatusSold(@Param("currentUser") User currentUser, @Param("id") Long id);
+
+    @Query (
+            value = """
+           SELECT 
+                p.id as id,
+                i.url as imageUrl,
+                p.viewCount as viewCount,
+                COUNT(DISTINCT l.id) as likeCount
+           FROM Product p
+           LEFT JOIN Like l ON p = l.product
+           LEFT JOIN Image i ON p = i.product
+           WHERE p.seller = :currentUser
+           AND (:status IS NULL OR p.status = :status)
+           AND i.position = (
+              SELECT MIN(i2.position)
+              FROM Image i2
+              WHERE i2.product = p)
+           GROUP BY 
+               p.id,
+               i.url,
+               p.viewCount,
+               p.createdAt
+           ORDER BY p.createdAt DESC
+           """, countQuery = """
+            SELECT COUNT(p)
+            FROM Product p
+            WHERE p.seller = :currentUser
+           AND (:status IS NULL OR p.status = :status)
+           """
+    )
+    Page<MyProductSummaryProjection> findBySellerAndStatus(@Param("currentUser") User currentUser, @Param("status") Status status, Pageable pageable);
 }

@@ -1,9 +1,6 @@
 package com.example.ecommerce.controllers.product;
 
-import com.example.ecommerce.dtos.product.CreateProductRequest;
-import com.example.ecommerce.dtos.product.ProductResponse;
-import com.example.ecommerce.dtos.product.ProductSummaryResponse;
-import com.example.ecommerce.dtos.product.UpdateProductRequest;
+import com.example.ecommerce.dtos.product.*;
 import com.example.ecommerce.entitites.product.enums.*;
 import com.example.ecommerce.services.product.ProductService;
 import jakarta.validation.Valid;
@@ -68,5 +65,14 @@ public class ProductController {
             Authentication authentication
     ) {
         return productService.getProduct(id, authentication);
+    }
+
+    @GetMapping(path = "/my")
+    public Page<MyProductSummaryResponse> getMyProducts(
+            Authentication authentication,
+            @RequestParam (defaultValue = "ACTIVE", required = false) Status status,
+            @PageableDefault(size = 30) Pageable pageable
+    ) {
+        return productService.getMyProducts(authentication, status, pageable);
     }
 }

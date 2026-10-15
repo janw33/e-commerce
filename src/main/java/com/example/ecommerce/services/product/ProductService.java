@@ -1,9 +1,6 @@
 package com.example.ecommerce.services.product;
 
-import com.example.ecommerce.dtos.product.CreateProductRequest;
-import com.example.ecommerce.dtos.product.ProductResponse;
-import com.example.ecommerce.dtos.product.ProductSummaryResponse;
-import com.example.ecommerce.dtos.product.UpdateProductRequest;
+import com.example.ecommerce.dtos.product.*;
 import com.example.ecommerce.entitites.product.Product;
 import com.example.ecommerce.entitites.product.enums.*;
 import com.example.ecommerce.entitites.product.productEntities.Brand;
@@ -145,5 +142,12 @@ public class ProductService {
         List<Image> images = imageRepository.findByProductIdOrderByPositionAsc(id);
 
         return productMapper.toResponse(product, likeCount, images.stream().map(imageMapper::toResponse).toList());
+    }
+
+    public Page<MyProductSummaryResponse> getMyProducts(Authentication authentication, Status status, Pageable pageable) {
+        User currentUser = currentUserProvider.get(authentication);
+
+        return productRepository.findBySellerAndStatus(currentUser, status, pageable)
+                .map(productMapper::toMySummaryResponse);
     }
 }

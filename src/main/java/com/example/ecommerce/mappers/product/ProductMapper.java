@@ -1,10 +1,7 @@
 package com.example.ecommerce.mappers.product;
 
 import com.example.ecommerce.dtos.image.ImageResponse;
-import com.example.ecommerce.dtos.product.CreateProductRequest;
-import com.example.ecommerce.dtos.product.ProductResponse;
-import com.example.ecommerce.dtos.product.ProductSummaryProjection;
-import com.example.ecommerce.dtos.product.ProductSummaryResponse;
+import com.example.ecommerce.dtos.product.*;
 import com.example.ecommerce.entitites.product.Product;
 import com.example.ecommerce.entitites.product.productEntities.Brand;
 import com.example.ecommerce.entitites.product.productEntities.Category;
@@ -73,6 +70,15 @@ public class ProductMapper {
                 .condition(projection.getCondition())
                 .brandName(projection.getBrandName())
                 .likeCount(projection.getLikeCount())
+                .build();
+    }
+
+    public MyProductSummaryResponse toMySummaryResponse(MyProductSummaryProjection myProductSummaryProjection) {
+        return MyProductSummaryResponse.builder()
+                .id(myProductSummaryProjection.getId())
+                .imageUrl(myProductSummaryProjection.getImageUrl())
+                .viewCount(myProductSummaryProjection.getViewCount())
+                .likeCount(myProductSummaryProjection.getLikeCount())
                 .build();
     }
 }
