@@ -8,6 +8,7 @@ import com.example.ecommerce.dtos.image.CreateImageRequest;
 import com.example.ecommerce.dtos.image.ImageResponse;
 import com.example.ecommerce.dtos.product.CreateProductRequest;
 import com.example.ecommerce.dtos.product.ProductResponse;
+import com.example.ecommerce.dtos.product.ProductSummaryResponse;
 import com.example.ecommerce.dtos.product.UpdateProductRequest;
 import com.example.ecommerce.entitites.product.Product;
 import com.example.ecommerce.entitites.product.enums.*;
@@ -201,6 +202,18 @@ public final class TestDataUtil {
                 .materials(product().getMaterials())
                 .price(product().getPrice())
                 .currency(product().getCurrency())
+                .build();
+    }
+
+    public static ProductSummaryResponse productSummaryResponse() {
+        return ProductSummaryResponse.builder()
+                .id(product().getId())
+                .title(product().getTitle())
+                .imageUrl(image().getUrl())
+                .price(product().getPrice())
+                .condition(product().getCondition())
+                .brandName(product().getBrand().getName())
+                .likeCount(0L)
                 .build();
     }
 }

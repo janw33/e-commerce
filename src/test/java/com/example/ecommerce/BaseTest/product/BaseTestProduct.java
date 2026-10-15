@@ -5,6 +5,7 @@ import com.example.ecommerce.dtos.image.CreateImageRequest;
 import com.example.ecommerce.dtos.image.ImageResponse;
 import com.example.ecommerce.dtos.product.CreateProductRequest;
 import com.example.ecommerce.dtos.product.ProductResponse;
+import com.example.ecommerce.dtos.product.ProductSummaryResponse;
 import com.example.ecommerce.dtos.product.UpdateProductRequest;
 import com.example.ecommerce.entitites.product.Product;
 import com.example.ecommerce.entitites.product.productEntities.Brand;
@@ -23,6 +24,7 @@ public abstract class BaseTestProduct {
     protected CreateProductRequest createProductRequest;
     protected UpdateProductRequest updateProductRequest;
     protected ProductResponse productResponse;
+    protected ProductSummaryResponse productSummaryResponse;
     protected CreateImageRequest createImageRequest;
     protected ImageResponse imageResponse;
     @BeforeEach
@@ -36,6 +38,7 @@ public abstract class BaseTestProduct {
         createProductRequest = TestDataUtil.createProductRequest();
         updateProductRequest = TestDataUtil.updateProductRequest();
         productResponse = TestDataUtil.productResponse();
+        productSummaryResponse = TestDataUtil.productSummaryResponse();
         createImageRequest = TestDataUtil.createImageRequest();
         imageResponse = TestDataUtil.imageResponse();
     }
