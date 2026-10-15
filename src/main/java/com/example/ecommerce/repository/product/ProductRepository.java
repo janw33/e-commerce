@@ -131,6 +131,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             Pageable pageable
     );
 
-    Optional<Product> findByIdAndStatusActive(Long id);
-    Optional<Product> findBySellerAndIdAndStatusSold(User currentUser, Long id);
+    @Query (value = "SELECT p FROM Product p WHERE p.id = :id AND p.status = 'ACTIVE'")
+    Optional<Product> findByIdAndStatusActive(@Param("id") Long id);
+
+    @Query (value = "SELECT p FROM Product p WHERE p.seller = :currentUser AND p.id = :id AND p.status = 'SOLD'")
+    Optional<Product> findBySellerAndIdAndStatusSold(@Param("currentUser") User currentUser, @Param("id") Long id);
 }
