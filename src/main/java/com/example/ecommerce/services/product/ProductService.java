@@ -161,7 +161,6 @@ public class ProductService {
                 .orElseThrow(ProductNotFoundException::new);
 
         imageRepository.deleteAllByProductId(product.getId());
-
         product.setStatus(Status.DELETED);
     }
 }
