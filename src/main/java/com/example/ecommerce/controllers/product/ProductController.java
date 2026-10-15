@@ -2,13 +2,21 @@ package com.example.ecommerce.controllers.product;
 
 import com.example.ecommerce.dtos.product.CreateProductRequest;
 import com.example.ecommerce.dtos.product.ProductResponse;
+import com.example.ecommerce.dtos.product.ProductSummaryResponse;
 import com.example.ecommerce.dtos.product.UpdateProductRequest;
+import com.example.ecommerce.entitites.product.enums.*;
 import com.example.ecommerce.services.product.ProductService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.Set;
 
 @RestController
 @RequestMapping("api/v1/products")
@@ -34,5 +42,23 @@ public class ProductController {
             Authentication authentication
     ) {
         return productService.updateProduct(request, authentication, id);
+    }
+
+    @GetMapping
+    public Page<ProductSummaryResponse> getProducts(
+            @RequestParam (required = false) Long categoryId,
+            @RequestParam (required = false) Size size,
+            @RequestParam (required = false) Long brandId,
+            @RequestParam (required = false) Condition condition,
+            @RequestParam (required = false) Set<Color> colors,
+            @RequestParam (required = false) BigDecimal minPrice,
+            @RequestParam (required = false) BigDecimal maxPrice,
+            @RequestParam (required = false) Set<Material> materials,
+            @RequestParam (defaultValue = "RELEVANCE", required = false) ProductSortBy sortBy,
+            @RequestParam (required = false) String search,
+            Authentication authentication,
+            @PageableDefault(size = 100) Pageable pageable
+    ) {
+        return productService.getProducts(categoryId, size, brandId, condition, colors, minPrice, maxPrice, materials, sortBy, search,authentication, pageable);
     }
 }

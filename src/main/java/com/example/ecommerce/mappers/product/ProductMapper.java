@@ -3,9 +3,12 @@ package com.example.ecommerce.mappers.product;
 import com.example.ecommerce.dtos.image.ImageResponse;
 import com.example.ecommerce.dtos.product.CreateProductRequest;
 import com.example.ecommerce.dtos.product.ProductResponse;
+import com.example.ecommerce.dtos.product.ProductSummaryProjection;
+import com.example.ecommerce.dtos.product.ProductSummaryResponse;
 import com.example.ecommerce.entitites.product.Product;
 import com.example.ecommerce.entitites.product.productEntities.Brand;
 import com.example.ecommerce.entitites.product.productEntities.Category;
+import com.example.ecommerce.entitites.product.productEntities.Image;
 import com.example.ecommerce.entitites.user.User;
 import org.springframework.stereotype.Component;
 
@@ -58,6 +61,18 @@ public class ProductMapper {
                 .deletedAt(product.getDeletedAt())
                 .soldAt(product.getSoldAt())
                 .images(images)
+                .build();
+    }
+
+    public ProductSummaryResponse toSummaryResponse(ProductSummaryProjection projection) {
+        return ProductSummaryResponse.builder()
+                .id(projection.getId())
+                .title(projection.getTitle())
+                .imageUrl(projection.getImageUrl())
+                .price(projection.getPrice())
+                .condition(projection.getCondition())
+                .brandName(projection.getBrandName())
+                .likeCount(projection.getLikeCount())
                 .build();
     }
 }

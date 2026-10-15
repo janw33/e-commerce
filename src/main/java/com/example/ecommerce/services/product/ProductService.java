@@ -2,12 +2,15 @@ package com.example.ecommerce.services.product;
 
 import com.example.ecommerce.dtos.product.CreateProductRequest;
 import com.example.ecommerce.dtos.product.ProductResponse;
+import com.example.ecommerce.dtos.product.ProductSummaryResponse;
 import com.example.ecommerce.dtos.product.UpdateProductRequest;
 import com.example.ecommerce.entitites.product.Product;
+import com.example.ecommerce.entitites.product.enums.*;
 import com.example.ecommerce.entitites.product.productEntities.Brand;
 import com.example.ecommerce.entitites.product.productEntities.Category;
 import com.example.ecommerce.entitites.product.productEntities.Image;
 import com.example.ecommerce.entitites.user.User;
+import com.example.ecommerce.exceptions.ImageNotFoundException;
 import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
 import com.example.ecommerce.exceptions.product.ProductNotFoundException;
@@ -20,10 +23,14 @@ import com.example.ecommerce.repository.image.ImageRepository;
 import com.example.ecommerce.repository.like.LikeRepository;
 import com.example.ecommerce.repository.product.ProductRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 @Service
@@ -111,5 +118,17 @@ public class ProductService {
         List<Image> savedImages = imageRepository.saveAll(newImages);
 
         return productMapper.toResponse(product, likeCount, savedImages.stream().map(imageMapper::toResponse).toList());
+    }
+
+    public Page<ProductSummaryResponse> getProducts(
+            Long categoryId, Size size, Long brandId,
+            Condition condition, Set<Color> colors, BigDecimal minPrice,
+            BigDecimal maxPrice, Set<Material> materials, ProductSortBy sortBy,
+            String search, Authentication authentication, Pageable pageable) {
+
+        currentUserProvider.get(authentication);
+
+        return productRepository.findProducts(categoryId, size, brandId, condition, colors, minPrice, maxPrice, materials, sortBy, search, pageable).map(productMapper::toSummaryResponse);
+
     }
 }
