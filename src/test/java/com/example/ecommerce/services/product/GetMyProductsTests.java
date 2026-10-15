@@ -4,6 +4,7 @@ import com.example.ecommerce.BaseTest.product.BaseTestProduct;
 import com.example.ecommerce.dtos.product.MyProductSummaryProjection;
 import com.example.ecommerce.dtos.product.MyProductSummaryResponse;
 import com.example.ecommerce.entitites.product.enums.Status;
+import com.example.ecommerce.exceptions.product.InvalidStatusException;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.mappers.image.ImageMapper;
 import com.example.ecommerce.mappers.product.ProductMapper;
@@ -80,6 +81,19 @@ public class GetMyProductsTests extends BaseTestProduct {
         assertThrows(
                 UserNotFoundException.class,
                 () -> productService.getMyProducts(authentication, Status.ACTIVE, Pageable.unpaged())
+        );
+
+        verifyNoInteractions(productRepository);
+    }
+
+    @Test
+    void shouldThrowInvalidStatusExceptionWhenStatusIsDeleted() {
+        when(currentUserProvider.get(authentication))
+                .thenReturn(user);
+
+        assertThrows(
+                InvalidStatusException.class,
+                () -> productService.getMyProducts(authentication, Status.DELETED, Pageable.unpaged())
         );
 
         verifyNoInteractions(productRepository);

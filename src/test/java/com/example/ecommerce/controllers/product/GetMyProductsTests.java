@@ -3,6 +3,7 @@ package com.example.ecommerce.controllers.product;
 import com.example.ecommerce.BaseTest.product.BaseTestProduct;
 import com.example.ecommerce.dtos.product.MyProductSummaryResponse;
 import com.example.ecommerce.entitites.product.enums.Status;
+import com.example.ecommerce.exceptions.product.InvalidStatusException;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.services.product.ProductService;
 import org.junit.jupiter.api.Test;
@@ -86,6 +87,18 @@ public class GetMyProductsTests extends BaseTestProduct {
                 status().isNotFound(),
                 jsonPath("$.error").value("USER_NOT_FOUND"),
                 jsonPath("$.message").value("User not found")
+        );
+    }
+
+    @Test
+    void shouldReturnHttp404WhenStatusIsInvalid() throws Exception {
+        when(productService.getMyProducts(any(), any(), any()))
+                .thenThrow(new InvalidStatusException());
+
+        performGet(
+                status().isBadRequest(),
+                jsonPath("$.error").value("INVALID_STATUS"),
+                jsonPath("$.message").value("Invalid status for this operation")
         );
     }
 

@@ -75,4 +75,13 @@ public class ProductController {
     ) {
         return productService.getMyProducts(authentication, status, pageable);
     }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Void> deleteProduct(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        productService.deleteProduct(id, authentication);
+        return ResponseEntity.noContent().build();
+    }
 }

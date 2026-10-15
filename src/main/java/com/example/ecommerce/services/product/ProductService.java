@@ -7,9 +7,9 @@ import com.example.ecommerce.entitites.product.productEntities.Brand;
 import com.example.ecommerce.entitites.product.productEntities.Category;
 import com.example.ecommerce.entitites.product.productEntities.Image;
 import com.example.ecommerce.entitites.user.User;
-import com.example.ecommerce.exceptions.ImageNotFoundException;
 import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
+import com.example.ecommerce.exceptions.product.InvalidStatusException;
 import com.example.ecommerce.exceptions.product.ProductNotFoundException;
 import com.example.ecommerce.mappers.image.ImageMapper;
 import com.example.ecommerce.mappers.product.ProductMapper;
@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -147,7 +146,22 @@ public class ProductService {
     public Page<MyProductSummaryResponse> getMyProducts(Authentication authentication, Status status, Pageable pageable) {
         User currentUser = currentUserProvider.get(authentication);
 
+        if (status == Status.DELETED) {
+            throw new InvalidStatusException(); }
+
         return productRepository.findBySellerAndStatus(currentUser, status, pageable)
                 .map(productMapper::toMySummaryResponse);
+    }
+
+    @Transactional
+    public void deleteProduct(Long id, Authentication authentication) {
+        User currentUser = currentUserProvider.get(authentication);
+
+        Product product = productRepository.findBySellerAndIdAndStatusActiveOrSold(currentUser, id)
+                .orElseThrow(ProductNotFoundException::new);
+
+        imageRepository.deleteAllByProductId(product.getId());
+
+        product.setStatus(Status.DELETED);
     }
 }

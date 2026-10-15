@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -149,7 +150,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
            LEFT JOIN Like l ON p = l.product
            LEFT JOIN Image i ON p = i.product
            WHERE p.seller = :currentUser
-           AND (:status IS NULL OR p.status = :status)
+           AND (p.status = :status)
            AND i.position = (
               SELECT MIN(i2.position)
               FROM Image i2
@@ -168,4 +169,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
            """
     )
     Page<MyProductSummaryProjection> findBySellerAndStatus(@Param("currentUser") User currentUser, @Param("status") Status status, Pageable pageable);
+
+    @Query (value = "SELECT p FROM Product p WHERE p.seller = :currentUser AND p.id = :id AND p.status IN ('SOLD', 'ACTIVE')")
+    Optional<Product> findBySellerAndIdAndStatusActiveOrSold(User currentUser, Long id);
 }
