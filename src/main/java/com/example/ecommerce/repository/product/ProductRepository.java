@@ -130,4 +130,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("search") String search,
             Pageable pageable
     );
+
+    Optional<Product> findByIdAndStatusActive(Long id);
+    Optional<Product> findBySellerAndIdAndStatusSold(User currentUser, Long id);
 }

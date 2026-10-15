@@ -61,4 +61,12 @@ public class ProductController {
     ) {
         return productService.getProducts(categoryId, size, brandId, condition, colors, minPrice, maxPrice, materials, sortBy, search,authentication, pageable);
     }
+
+    @GetMapping(path = "/{id}")
+    public ProductResponse getProduct(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        return productService.getProduct(id, authentication);
+    }
 }

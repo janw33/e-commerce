@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -130,5 +131,19 @@ public class ProductService {
 
         return productRepository.findProducts(categoryId, size, brandId, condition, colors, minPrice, maxPrice, materials, sortBy, search, pageable).map(productMapper::toSummaryResponse);
 
+    }
+
+    public ProductResponse getProduct(Long id, Authentication authentication) {
+        User currentUser = currentUserProvider.get(authentication);
+
+        Product product = productRepository.findByIdAndStatusActive(id)
+                .orElseGet(() -> productRepository.findBySellerAndIdAndStatusSold(currentUser, id)
+                        .orElseThrow(ProductNotFoundException::new));
+
+        long likeCount = likeRepository.countByProductId(id);
+
+        List<Image> images = imageRepository.findByProductIdOrderByPositionAsc(id);
+
+        return productMapper.toResponse(product, likeCount, images.stream().map(imageMapper::toResponse).toList());
     }
 }
