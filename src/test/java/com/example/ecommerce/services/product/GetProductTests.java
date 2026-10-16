@@ -101,7 +101,7 @@ public class GetProductTests extends BaseTestProduct {
         );
 
         verify(likeRepository, never()).countByProductId(any());
-        verify(imageRepository, never()).findByProductIdOrderByPositionAsc(any());
+        verify(imageRepository, never()).findAllByProductIdOrderByPositionAsc(any());
     }
 
     @Test
@@ -115,7 +115,7 @@ public class GetProductTests extends BaseTestProduct {
         when(likeRepository.countByProductId(product.getId()))
                 .thenReturn(2L);
 
-        when(imageRepository.findByProductIdOrderByPositionAsc(product.getId()))
+        when(imageRepository.findAllByProductIdOrderByPositionAsc(product.getId()))
                 .thenReturn(List.of(image));
 
         ProductResponse result = productService.getProduct(product.getId(), authentication);
@@ -124,7 +124,7 @@ public class GetProductTests extends BaseTestProduct {
 
         verify(productRepository, never()).findBySellerAndIdAndStatus(user, product.getId(), Status.SOLD);
         verify(likeRepository).countByProductId(product.getId());
-        verify(imageRepository).findByProductIdOrderByPositionAsc(product.getId());
+        verify(imageRepository).findAllByProductIdOrderByPositionAsc(product.getId());
     }
 
     @Test
@@ -143,7 +143,7 @@ public class GetProductTests extends BaseTestProduct {
         when(likeRepository.countByProductId(product.getId()))
                 .thenReturn(4L);
 
-        when(imageRepository.findByProductIdOrderByPositionAsc(product.getId()))
+        when(imageRepository.findAllByProductIdOrderByPositionAsc(product.getId()))
                 .thenReturn(List.of(image));
 
         ProductResponse result = productService.getProduct(product.getId(), authentication);

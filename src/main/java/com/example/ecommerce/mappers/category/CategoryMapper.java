@@ -2,22 +2,21 @@ package com.example.ecommerce.mappers.category;
 
 import com.example.ecommerce.dtos.category.CategoryDetailsResponse;
 import com.example.ecommerce.dtos.category.CategorySummaryResponse;
-import com.example.ecommerce.dtos.category.DetailsCategoryWithChildrenProjection;
-import com.example.ecommerce.dtos.category.SummaryCategoryWithChildrenProjection;
+import com.example.ecommerce.dtos.category.CategoryDetailsProjection;
+import com.example.ecommerce.dtos.category.CategorySummaryProjection;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CategoryMapper {
-    public CategorySummaryResponse toSummaryResponse(SummaryCategoryWithChildrenProjection category) {
+    public CategorySummaryResponse toSummaryResponse(CategorySummaryProjection category) {
         return CategorySummaryResponse.builder()
                 .id(category.getId())
                 .name(category.getName())
-                .sizeType(category.getSizeType())
                 .hasChildren(category.getHasChildren())
                 .build();
     }
 
-    public CategoryDetailsResponse toDetailsResponse(DetailsCategoryWithChildrenProjection category) {
+    public CategoryDetailsResponse toDetailsResponse(CategoryDetailsProjection category) {
         return CategoryDetailsResponse.builder()
                 .id(category.getId())
                 .name(category.getName())

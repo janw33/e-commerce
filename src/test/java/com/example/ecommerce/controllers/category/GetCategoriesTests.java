@@ -93,7 +93,6 @@ public class GetCategoriesTests extends BaseTestCategory {
                 jsonPath("$.totalElements").value(1),
                 jsonPath("$.content[0].id").value(category.getId()),
                 jsonPath("$.content[0].name").value(category.getName()),
-                jsonPath("$.content[0].sizeType").value(category.getSizeType().toString()),
                 jsonPath("$.content[0].hasChildren").value(true));
     }
 }

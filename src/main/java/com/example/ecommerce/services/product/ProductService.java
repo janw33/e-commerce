@@ -9,6 +9,7 @@ import com.example.ecommerce.entitites.product.productEntities.Image;
 import com.example.ecommerce.entitites.user.User;
 import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
+import com.example.ecommerce.exceptions.product.InvalidSizeTypeException;
 import com.example.ecommerce.exceptions.product.InvalidStatusException;
 import com.example.ecommerce.exceptions.product.ProductNotFoundException;
 import com.example.ecommerce.mappers.image.ImageMapper;
@@ -61,6 +62,10 @@ public class ProductService {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(CategoryNotFoundException::new);
 
+        if (category.getSizeType() != request.getSize().getType()) {
+            throw new InvalidSizeTypeException();
+        }
+
         Brand brand = brandRepository.findById(request.getBrandId())
                 .orElseThrow(BrandNotFoundException::new);
 
@@ -86,6 +91,10 @@ public class ProductService {
 
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(CategoryNotFoundException::new);
+
+        if (category.getSizeType() != request.getSize().getType()) {
+            throw new InvalidSizeTypeException();
+        }
 
         Brand brand = brandRepository.findById(request.getBrandId())
                 .orElseThrow(BrandNotFoundException::new);
@@ -139,7 +148,7 @@ public class ProductService {
 
         long likeCount = likeRepository.countByProductId(id);
 
-        List<Image> images = imageRepository.findByProductIdOrderByPositionAsc(id);
+        List<Image> images = imageRepository.findAllByProductIdOrderByPositionAsc(id);
 
         return productMapper.toResponse(product, likeCount, images.stream().map(imageMapper::toResponse).toList());
     }

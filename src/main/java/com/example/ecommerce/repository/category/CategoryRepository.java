@@ -1,7 +1,7 @@
 package com.example.ecommerce.repository.category;
 
-import com.example.ecommerce.dtos.category.DetailsCategoryWithChildrenProjection;
-import com.example.ecommerce.dtos.category.SummaryCategoryWithChildrenProjection;
+import com.example.ecommerce.dtos.category.CategoryDetailsProjection;
+import com.example.ecommerce.dtos.category.CategorySummaryProjection;
 import com.example.ecommerce.entitites.product.productEntities.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +18,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     SELECT
         c.id AS id,
         c.name AS name,
-        c.sizeType AS sizeType,
         CASE
             WHEN EXISTS (
                 SELECT 1
@@ -32,7 +31,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     WHERE (:parentId IS NULL AND c.parent IS NULL)
        OR (:parentId IS NOT NULL AND c.parent.id = :parentId)
 """)
-    Page<SummaryCategoryWithChildrenProjection> findCategories(
+    Page<CategorySummaryProjection> findCategories(
             @Param("parentId") Long parentId,
             Pageable pageable
     );
@@ -55,5 +54,5 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     FROM Category c
     WHERE c.id = :id
 """)
-    Optional<DetailsCategoryWithChildrenProjection> findCategory(@Param("id") Long id);
+    Optional<CategoryDetailsProjection> findCategory(@Param("id") Long id);
 }

@@ -3,10 +3,12 @@ package com.example.ecommerce.services.product;
 import com.example.ecommerce.BaseTest.product.BaseTestProduct;
 import com.example.ecommerce.dtos.product.ProductResponse;
 import com.example.ecommerce.dtos.product.UpdateProductRequest;
+import com.example.ecommerce.entitites.product.enums.SizeType;
 import com.example.ecommerce.entitites.product.enums.Status;
 import com.example.ecommerce.entitites.product.productEntities.Image;
 import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
+import com.example.ecommerce.exceptions.product.InvalidSizeTypeException;
 import com.example.ecommerce.exceptions.product.ProductNotFoundException;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.mappers.image.ImageMapper;
@@ -105,6 +107,7 @@ public class UpdateProductTests extends BaseTestProduct {
         verifyNoInteractions(categoryRepository, brandRepository, likeRepository, imageRepository);
     }
 
+
     @Test
     void shouldThrowCategoryNotFoundExceptionWhenCategoryDoesntExists() {
         when(currentUserProvider.get(authentication))
@@ -118,6 +121,27 @@ public class UpdateProductTests extends BaseTestProduct {
 
         assertThrows(
                 CategoryNotFoundException.class,
+                () -> productService.updateProduct(updateProductRequest, authentication, product.getId())
+        );
+
+        verifyNoInteractions(brandRepository, likeRepository, imageRepository);
+    }
+
+    @Test
+    void shouldThrowInvalidSizeTypeExceptionWhenCategorySizeTypeAndProductSizeTypeDoesntMatch() {
+        category.setSizeType(SizeType.SHOES);
+
+        when(currentUserProvider.get(authentication))
+                .thenReturn(user);
+
+        when(productRepository.findBySellerAndIdAndStatus(user, product.getId(), Status.ACTIVE))
+                .thenReturn(Optional.of(product));
+
+        when(categoryRepository.findById(category.getId()))
+                .thenReturn(Optional.of(category));
+
+        assertThrows(
+                InvalidSizeTypeException.class,
                 () -> productService.updateProduct(updateProductRequest, authentication, product.getId())
         );
 

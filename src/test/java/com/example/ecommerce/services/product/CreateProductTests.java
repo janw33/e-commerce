@@ -2,9 +2,11 @@ package com.example.ecommerce.services.product;
 
 import com.example.ecommerce.BaseTest.product.BaseTestProduct;
 import com.example.ecommerce.dtos.product.ProductResponse;
+import com.example.ecommerce.entitites.product.enums.SizeType;
 import com.example.ecommerce.entitites.product.productEntities.Image;
 import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
+import com.example.ecommerce.exceptions.product.InvalidSizeTypeException;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.mappers.image.ImageMapper;
 import com.example.ecommerce.mappers.product.ProductMapper;
@@ -97,6 +99,25 @@ public class CreateProductTests extends BaseTestProduct {
 
         assertThrows(
                 CategoryNotFoundException.class,
+                () -> productService.createProduct(createProductRequest, authentication)
+        );
+
+        verify(productRepository, never()).save(any());
+        verify(imageRepository, never()).saveAll(any());
+    }
+
+    @Test
+    void shouldThrowInvalidSizeTypeExceptionWhenCategorySizeTypeAndProductSizeTypeDoesntMatch() {
+        category.setSizeType(SizeType.SHOES);
+
+        when(currentUserProvider.get(authentication))
+                .thenReturn(user);
+
+        when(categoryRepository.findById(category.getId()))
+                .thenReturn(Optional.of(category));
+
+        assertThrows(
+                InvalidSizeTypeException.class,
                 () -> productService.createProduct(createProductRequest, authentication)
         );
 

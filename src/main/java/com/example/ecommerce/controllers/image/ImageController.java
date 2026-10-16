@@ -17,7 +17,7 @@ public class ImageController {
     }
 
     @GetMapping
-    public List<ImageResponse> getImages( // TODO: ADD TESTS
+    public List<ImageResponse> getImages(
             Authentication authentication,
             @PathVariable Long productId
     ) {

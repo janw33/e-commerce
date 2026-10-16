@@ -75,7 +75,6 @@ public final class TestDataUtil {
         return CategorySummaryResponse.builder()
                 .id(category().getId())
                 .name(category().getName())
-                .sizeType(category().getSizeType())
                 .hasChildren(true)
                 .build();
     }

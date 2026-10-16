@@ -3,6 +3,7 @@ package com.example.ecommerce.services.image;
 import com.example.ecommerce.dtos.image.ImageResponse;
 import com.example.ecommerce.entitites.product.Product;
 import com.example.ecommerce.entitites.product.enums.Status;
+import com.example.ecommerce.exceptions.image.ImageNotFoundException;
 import com.example.ecommerce.exceptions.product.ProductNotFoundException;
 import com.example.ecommerce.mappers.image.ImageMapper;
 import com.example.ecommerce.providers.CurrentUserProvider;

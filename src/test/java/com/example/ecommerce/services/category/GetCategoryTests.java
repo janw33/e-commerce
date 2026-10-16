@@ -2,7 +2,7 @@ package com.example.ecommerce.services.category;
 
 import com.example.ecommerce.BaseTest.category.BaseTestCategory;
 import com.example.ecommerce.dtos.category.CategoryDetailsResponse;
-import com.example.ecommerce.dtos.category.DetailsCategoryWithChildrenProjection;
+import com.example.ecommerce.dtos.category.CategoryDetailsProjection;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.mappers.category.CategoryMapper;
@@ -79,8 +79,8 @@ public class GetCategoryTests extends BaseTestCategory {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        DetailsCategoryWithChildrenProjection projection =
-                mock(DetailsCategoryWithChildrenProjection.class);
+        CategoryDetailsProjection projection =
+                mock(CategoryDetailsProjection.class);
 
         when(projection.getId()).thenReturn(category.getId());
         when(projection.getName()).thenReturn(category.getName());

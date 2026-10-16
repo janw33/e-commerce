@@ -2,7 +2,7 @@ package com.example.ecommerce.services.category;
 
 import com.example.ecommerce.BaseTest.category.BaseTestCategory;
 import com.example.ecommerce.dtos.category.CategorySummaryResponse;
-import com.example.ecommerce.dtos.category.SummaryCategoryWithChildrenProjection;
+import com.example.ecommerce.dtos.category.CategorySummaryProjection;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.mappers.category.CategoryMapper;
 import com.example.ecommerce.providers.CurrentUserProvider;
@@ -65,15 +65,14 @@ public class GetCategoriesTests extends BaseTestCategory {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        SummaryCategoryWithChildrenProjection projection =
-                mock(SummaryCategoryWithChildrenProjection.class);
+        CategorySummaryProjection projection =
+                mock(CategorySummaryProjection.class);
 
         when(projection.getId()).thenReturn(category.getId());
         when(projection.getName()).thenReturn(category.getName());
-        when(projection.getSizeType()).thenReturn(category.getSizeType());
         when(projection.getHasChildren()).thenReturn(true);
 
-        Page<SummaryCategoryWithChildrenProjection> page =
+        Page<CategorySummaryProjection> page =
                 new PageImpl<>(List.of(projection));
 
         when(categoryRepository.findCategories(null, Pageable.unpaged()))
@@ -88,7 +87,6 @@ public class GetCategoriesTests extends BaseTestCategory {
 
         assertEquals(projection.getId(), first.getId());
         assertEquals(projection.getName(), first.getName());
-        assertEquals(projection.getSizeType(), first.getSizeType());
         assertTrue(first.isHasChildren());
 
         verify(categoryRepository).findCategories(null, Pageable.unpaged());

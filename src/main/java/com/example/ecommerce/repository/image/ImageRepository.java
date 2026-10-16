@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
-    List<Image> findAllByProductIdOrderByPositionAsc(Long productId);
-
     void deleteAllByProductId(Long id);
 
-    List<Image> findByProductIdOrderByPositionAsc(Long id);
+    List<Image> findAllByProductIdOrderByPositionAsc(Long id);
 }
