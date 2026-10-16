@@ -117,7 +117,7 @@ public final class TestDataUtil {
         return new CreateImageRequest(image().getUrl());
     }
 
-    public static ImageResponse imageResponse() {return new ImageResponse(image().getUrl());}
+    public static ImageResponse imageResponse() {return new ImageResponse(image().getId(), image().getUrl());}
 
     public static Product product() {
         return Product.builder()

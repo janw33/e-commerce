@@ -8,5 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ImageResponse {
+    private Long id;
     private String url;
 }

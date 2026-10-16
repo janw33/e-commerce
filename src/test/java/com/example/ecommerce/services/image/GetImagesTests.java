@@ -85,6 +85,7 @@ public class GetImagesTests extends BaseTestProduct {
     void shouldReturnImagesForProduct() {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
+
         when(productRepository.findByIdAndStatusIn(product.getId(), List.of(Status.ACTIVE, Status.SOLD)))
                 .thenReturn(Optional.of(product));
 
@@ -94,7 +95,9 @@ public class GetImagesTests extends BaseTestProduct {
         List<ImageResponse> result = imageService.getImages(authentication, product.getId());
 
         assertEquals(1, result.size());
+        assertEquals(image.getId(), result.getFirst().getId());
         assertEquals(image.getUrl(), result.getFirst().getUrl());
+
         verify(productRepository).findByIdAndStatusIn(
                 eq(product.getId()),
                 eq(List.of(Status.ACTIVE, Status.SOLD))

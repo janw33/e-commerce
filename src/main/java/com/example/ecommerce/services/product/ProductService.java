@@ -77,7 +77,7 @@ public class ProductService {
         return productMapper.toResponse(savedProduct, 0, images.stream().map(imageMapper::toResponse).toList());
     }
 
-    @Transactional
+    @Transactional // ewentualnie dodac zeby zdjecia nie byly usuwane dla kazdego requestu
     public ProductResponse updateProduct(UpdateProductRequest request, Authentication authentication, Long id) {
         User currentUser = currentUserProvider.get(authentication);
 
@@ -103,6 +103,7 @@ public class ProductService {
         product.setShippingSize(request.getShippingSize());
 
         long likeCount = likeRepository.countByProductId(product.getId());
+
         imageRepository.deleteAllByProductId(product.getId());
 
         List<Image> newImages = IntStream.range(0, request.getImages().size())
