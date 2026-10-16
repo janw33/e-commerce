@@ -81,7 +81,7 @@ public class ProductService {
     public ProductResponse updateProduct(UpdateProductRequest request, Authentication authentication, Long id) {
         User currentUser = currentUserProvider.get(authentication);
 
-        Product product = productRepository.findBySellerAndIdAndStatusActive(currentUser, id)
+        Product product = productRepository.findBySellerAndIdAndStatus(currentUser, id, Status.ACTIVE)
                 .orElseThrow(ProductNotFoundException::new);
 
         Category category = categoryRepository.findById(request.getCategoryId())
@@ -125,15 +125,15 @@ public class ProductService {
 
         currentUserProvider.get(authentication);
 
-        return productRepository.findProducts(categoryId, size, brandId, condition, colors, minPrice, maxPrice, materials, sortBy, search, pageable).map(productMapper::toSummaryResponse);
-
+        return productRepository.findProducts(categoryId, size, brandId, condition, colors, minPrice, maxPrice, materials, sortBy, search, pageable)
+                .map(productMapper::toSummaryResponse);
     }
 
     public ProductResponse getProduct(Long id, Authentication authentication) {
         User currentUser = currentUserProvider.get(authentication);
 
-        Product product = productRepository.findByIdAndStatusActive(id)
-                .orElseGet(() -> productRepository.findBySellerAndIdAndStatusSold(currentUser, id)
+        Product product = productRepository.findByIdAndStatus(id, Status.ACTIVE)
+                .orElseGet(() -> productRepository.findBySellerAndIdAndStatus(currentUser, id, Status.SOLD)
                         .orElseThrow(ProductNotFoundException::new));
 
         long likeCount = likeRepository.countByProductId(id);
@@ -157,7 +157,7 @@ public class ProductService {
     public void deleteProduct(Long id, Authentication authentication) {
         User currentUser = currentUserProvider.get(authentication);
 
-        Product product = productRepository.findBySellerAndIdAndStatusActiveOrSold(currentUser, id)
+        Product product = productRepository.findBySellerAndIdAndStatusIn(currentUser, id, List.of(Status.ACTIVE, Status.SOLD))
                 .orElseThrow(ProductNotFoundException::new);
 
         imageRepository.deleteAllByProductId(product.getId());

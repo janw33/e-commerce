@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -85,7 +86,7 @@ public class DeleteProductTests extends BaseTestProduct {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findBySellerAndIdAndStatusActiveOrSold(user, product.getId()))
+        when(productRepository.findBySellerAndIdAndStatusIn(user, product.getId(), List.of(Status.ACTIVE, Status.SOLD)))
                 .thenReturn(Optional.empty());
 
         assertThrows(
@@ -101,7 +102,7 @@ public class DeleteProductTests extends BaseTestProduct {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findBySellerAndIdAndStatusActiveOrSold(user, product.getId()))
+        when(productRepository.findBySellerAndIdAndStatusIn(user, product.getId(), List.of(Status.ACTIVE, Status.SOLD)))
                 .thenReturn(Optional.of(product));
 
         productService.deleteProduct(product.getId(), authentication);
@@ -109,6 +110,6 @@ public class DeleteProductTests extends BaseTestProduct {
         assertEquals(Status.DELETED, product.getStatus());
 
         verify(imageRepository).deleteAllByProductId(product.getId());
-        verify(productRepository).findBySellerAndIdAndStatusActiveOrSold(user, product.getId());
+        verify(productRepository).findBySellerAndIdAndStatusIn(user, product.getId(), List.of(Status.ACTIVE, Status.SOLD));
     }
 }

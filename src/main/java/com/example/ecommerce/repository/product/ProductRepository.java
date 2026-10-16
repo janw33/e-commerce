@@ -13,13 +13,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.parameters.P;
 
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    @Query (value = "SELECT p FROM Product p WHERE p.seller = :currentUser AND p.id = :id AND p.status = 'ACTIVE'")
-    Optional<Product> findBySellerAndIdAndStatusActive(@Param("currentUser") User currentUser, @Param("id") Long id);
-
     @Query(
             value = """
         SELECT
@@ -133,12 +132,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             Pageable pageable
     );
 
-    @Query (value = "SELECT p FROM Product p WHERE p.id = :id AND p.status = 'ACTIVE'")
-    Optional<Product> findByIdAndStatusActive(@Param("id") Long id);
-
-    @Query (value = "SELECT p FROM Product p WHERE p.seller = :currentUser AND p.id = :id AND p.status = 'SOLD'")
-    Optional<Product> findBySellerAndIdAndStatusSold(@Param("currentUser") User currentUser, @Param("id") Long id);
-
     @Query (
             value = """
            SELECT 
@@ -170,6 +163,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     )
     Page<MyProductSummaryProjection> findBySellerAndStatus(@Param("currentUser") User currentUser, @Param("status") Status status, Pageable pageable);
 
-    @Query (value = "SELECT p FROM Product p WHERE p.seller = :currentUser AND p.id = :id AND p.status IN ('SOLD', 'ACTIVE')")
-    Optional<Product> findBySellerAndIdAndStatusActiveOrSold(User currentUser, Long id);
+    Optional<Product> findByIdAndStatus(Long id, Status status);
+
+    Optional<Product> findBySellerAndIdAndStatus(User currentUser, Long id, Status status);
+
+    Optional<Product> findByIdAndStatusIn(Long id, Collection<Status> statuses);
+
+    Optional<Product> findBySellerAndIdAndStatusIn(User currentUser, Long id, Collection<Status> statuses);
 }

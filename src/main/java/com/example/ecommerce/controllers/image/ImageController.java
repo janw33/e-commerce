@@ -1,10 +1,7 @@
 package com.example.ecommerce.controllers.image;
 
-import com.example.ecommerce.dtos.category.CategorySummaryResponse;
 import com.example.ecommerce.dtos.image.ImageResponse;
 import com.example.ecommerce.services.image.ImageService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 

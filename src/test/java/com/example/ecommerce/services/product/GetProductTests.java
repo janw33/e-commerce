@@ -89,10 +89,10 @@ public class GetProductTests extends BaseTestProduct {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findByIdAndStatusActive(product.getId()))
+        when(productRepository.findByIdAndStatus(product.getId(), Status.ACTIVE))
                 .thenReturn(Optional.empty());
 
-        when(productRepository.findBySellerAndIdAndStatusSold(user, product.getId()))
+        when(productRepository.findBySellerAndIdAndStatus(user, product.getId(), Status.SOLD))
                 .thenReturn(Optional.empty());
 
         assertThrows(
@@ -109,7 +109,7 @@ public class GetProductTests extends BaseTestProduct {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findByIdAndStatusActive(product.getId()))
+        when(productRepository.findByIdAndStatus(product.getId(), Status.ACTIVE))
                 .thenReturn(Optional.of(product));
 
         when(likeRepository.countByProductId(product.getId()))
@@ -122,7 +122,7 @@ public class GetProductTests extends BaseTestProduct {
 
         assertProductResponse(result, 2L, List.of(image));
 
-        verify(productRepository, never()).findBySellerAndIdAndStatusSold(any(), any());
+        verify(productRepository, never()).findBySellerAndIdAndStatus(user, product.getId(), Status.SOLD);
         verify(likeRepository).countByProductId(product.getId());
         verify(imageRepository).findByProductIdOrderByPositionAsc(product.getId());
     }
@@ -134,10 +134,10 @@ public class GetProductTests extends BaseTestProduct {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findByIdAndStatusActive(product.getId()))
+        when(productRepository.findByIdAndStatus(product.getId(), Status.ACTIVE))
                 .thenReturn(Optional.empty());
 
-        when(productRepository.findBySellerAndIdAndStatusSold(user, product.getId()))
+        when(productRepository.findBySellerAndIdAndStatus(user, product.getId(), Status.SOLD))
                 .thenReturn(Optional.of(product));
 
         when(likeRepository.countByProductId(product.getId()))
@@ -150,7 +150,7 @@ public class GetProductTests extends BaseTestProduct {
 
         assertProductResponse(result, 4L, List.of(image));
 
-        verify(productRepository).findBySellerAndIdAndStatusSold(user, product.getId());
+        verify(productRepository).findBySellerAndIdAndStatus(user, product.getId(), Status.SOLD);
     }
 
     private void assertProductResponse(ProductResponse result, long expectedLikeCount, List<Image> expectedImages) {

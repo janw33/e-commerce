@@ -3,6 +3,7 @@ package com.example.ecommerce.services.product;
 import com.example.ecommerce.BaseTest.product.BaseTestProduct;
 import com.example.ecommerce.dtos.product.ProductResponse;
 import com.example.ecommerce.dtos.product.UpdateProductRequest;
+import com.example.ecommerce.entitites.product.enums.Status;
 import com.example.ecommerce.entitites.product.productEntities.Image;
 import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
@@ -93,7 +94,7 @@ public class UpdateProductTests extends BaseTestProduct {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findBySellerAndIdAndStatusActive(user, product.getId()))
+        when(productRepository.findBySellerAndIdAndStatus(user, product.getId(), Status.ACTIVE))
                 .thenReturn(Optional.empty());
 
         assertThrows(
@@ -109,7 +110,7 @@ public class UpdateProductTests extends BaseTestProduct {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findBySellerAndIdAndStatusActive(user, product.getId()))
+        when(productRepository.findBySellerAndIdAndStatus(user, product.getId(), Status.ACTIVE))
                 .thenReturn(Optional.of(product));
 
         when(categoryRepository.findById(updateProductRequest.getCategoryId()))
@@ -128,7 +129,7 @@ public class UpdateProductTests extends BaseTestProduct {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findBySellerAndIdAndStatusActive(user, product.getId()))
+        when(productRepository.findBySellerAndIdAndStatus(user, product.getId(), Status.ACTIVE))
                 .thenReturn(Optional.of(product));
 
         when(categoryRepository.findById(updateProductRequest.getCategoryId()))
@@ -150,7 +151,7 @@ public class UpdateProductTests extends BaseTestProduct {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findBySellerAndIdAndStatusActive(user, product.getId()))
+        when(productRepository.findBySellerAndIdAndStatus(user, product.getId(), Status.ACTIVE))
                 .thenReturn(Optional.of(product));
 
         when(categoryRepository.findById(updateProductRequest.getCategoryId()))
@@ -206,7 +207,7 @@ public class UpdateProductTests extends BaseTestProduct {
         assertEquals(updateProductRequest.getImages().getFirst().getUrl(), savedImages.getFirst().getUrl());
         assertEquals(0, savedImages.getFirst().getPosition());
 
-        verify(productRepository).findBySellerAndIdAndStatusActive(user, product.getId());
+        verify(productRepository).findBySellerAndIdAndStatus(user, product.getId(), Status.ACTIVE);
         verify(categoryRepository).findById(updateProductRequest.getCategoryId());
         verify(brandRepository).findById(updateProductRequest.getBrandId());
         verify(likeRepository).countByProductId(product.getId());
