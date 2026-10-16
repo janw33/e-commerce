@@ -50,9 +50,9 @@ public class GetBrandsTests extends BaseTestBrand {
                 );
     }
 
-    private void performGet(Long categoryId, String search, ResultMatcher... matchers) throws Exception {
+    private void performGet(ResultMatcher... matchers) throws Exception {
         var result = mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/v1/brand?categoryId=" + categoryId + "&search=" + search)
+                MockMvcRequestBuilders.get("/api/v1/brand")
                         .with(authenticatedUser())
         );
 
@@ -64,7 +64,7 @@ public class GetBrandsTests extends BaseTestBrand {
     @Test
     void shouldReturnHttp401WhenUserIsUnauthenticated() throws Exception {
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/api/v1/brand/1"))
+                        MockMvcRequestBuilders.get("/api/v1/brand"))
                 .andExpect(
                         status().isUnauthorized()
                 );
@@ -72,12 +72,10 @@ public class GetBrandsTests extends BaseTestBrand {
 
     @Test
     void shouldReturnHttp404WhenUserIsNotFound() throws Exception {
-        when(brandService.getBrands(any(Authentication.class), eq(category.getId()), eq("nike"), any(Pageable.class)))
+        when(brandService.getBrands(any(Authentication.class), any(), any(), any(Pageable.class)))
                 .thenThrow(new UserNotFoundException());
 
         performGet(
-                category.getId(),
-                "nike",
                 status().isNotFound(),
                 jsonPath("$.error").value("USER_NOT_FOUND"),
                 jsonPath("$.message").value("User not found"));
@@ -88,12 +86,10 @@ public class GetBrandsTests extends BaseTestBrand {
         Page<BrandResponse> page =
                 new PageImpl<>(List.of(brandResponse));
 
-        when(brandService.getBrands(any(Authentication.class), eq(category.getId()), eq("nike"), any(Pageable.class)))
+        when(brandService.getBrands(any(Authentication.class), any(), any(), any(Pageable.class)))
                 .thenReturn(page);
 
         performGet(
-                category.getId(),
-                "nike",
                 status().isOk(),
                 jsonPath("$.content").isArray(),
                 jsonPath("$.totalElements").value(1),
