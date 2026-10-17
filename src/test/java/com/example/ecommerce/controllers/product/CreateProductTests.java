@@ -30,6 +30,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -314,6 +315,31 @@ public class CreateProductTests extends BaseTestProduct {
                 jsonPath("$.validationErrors.price").value("Price must be greater than 0"));
     }
 
+    @Test
+    void shouldReturnHttp400WhenPriceIsBadFormat() throws Exception {
+        createProductRequest.setPrice(BigDecimal.valueOf(0.001));
+
+        performPost(
+                createProductRequest,
+                status().isBadRequest(),
+                jsonPath("$.error").value("VALIDATION_ERROR"),
+                jsonPath("$.validationErrors.price").value("Price must have at most 8 integer digits and 2 decimal places"));
+
+        verifyNoInteractions(productService);
+    }
+
+    @Test
+    void shouldReturnHttp400WhenPriceIsTooBig() throws Exception {
+        createProductRequest.setPrice(BigDecimal.valueOf(999999999));
+
+        performPost(
+                createProductRequest,
+                status().isBadRequest(),
+                jsonPath("$.error").value("VALIDATION_ERROR"),
+                jsonPath("$.validationErrors.price").value("Price must have at most 8 integer digits and 2 decimal places"));
+
+        verifyNoInteractions(productService);
+    }
 
     @Test
     void shouldReturnHttp400WhenCurrencyIsNull() throws Exception {

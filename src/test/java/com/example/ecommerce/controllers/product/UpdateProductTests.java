@@ -382,6 +382,32 @@ public class UpdateProductTests extends BaseTestProduct {
     }
 
     @Test
+    void shouldReturnHttp400WhenPriceIsBadFormat() throws Exception {
+        updateProductRequest.setPrice(BigDecimal.valueOf(0.001));
+
+        performPut(
+                updateProductRequest,
+                status().isBadRequest(),
+                jsonPath("$.error").value("VALIDATION_ERROR"),
+                jsonPath("$.validationErrors.price").value("Price must have at most 8 integer digits and 2 decimal places"));
+
+        verifyNoInteractions(productService);
+    }
+
+    @Test
+    void shouldReturnHttp400WhenPriceIsTooBig() throws Exception {
+        updateProductRequest.setPrice(BigDecimal.valueOf(999999999));
+
+        performPut(
+                updateProductRequest,
+                status().isBadRequest(),
+                jsonPath("$.error").value("VALIDATION_ERROR"),
+                jsonPath("$.validationErrors.price").value("Price must have at most 8 integer digits and 2 decimal places"));
+
+        verifyNoInteractions(productService);
+    }
+
+    @Test
     void shouldReturnHttp400WhenCurrencyIsNull() throws Exception {
         updateProductRequest.setCurrency(null);
 

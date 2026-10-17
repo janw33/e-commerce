@@ -1,7 +1,7 @@
 CREATE TABLE images (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     product_id BIGINT NOT NULL,
-    url VARCHAR(100) NOT NULL,
+    url VARCHAR(1000) NOT NULL,
     position INT NOT NULL,
 
     CONSTRAINT fk_image_product

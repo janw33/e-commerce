@@ -50,6 +50,7 @@ public class CreateProductRequest {
 
     @NotNull(message = "Price cannot be null")
     @Positive(message = "Price must be greater than 0")
+    @Digits(integer = 8, fraction = 2, message = "Price must have at most 8 integer digits and 2 decimal places")
     private BigDecimal price;
 
     @NotNull(message = "Currency cannot be null")
