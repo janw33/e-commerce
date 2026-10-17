@@ -2,6 +2,7 @@ package com.example.ecommerce.controllers.category;
 
 import com.example.ecommerce.dtos.category.CategoryDetailsResponse;
 import com.example.ecommerce.dtos.category.CategorySummaryResponse;
+import com.example.ecommerce.entitites.product.enums.Condition;
 import com.example.ecommerce.entitites.product.enums.Size;
 import com.example.ecommerce.services.category.CategoryService;
 import org.springframework.data.domain.Page;
@@ -43,5 +44,12 @@ public class CategoryController {
             Authentication authentication
     ) {
         return categoryService.getSizes(categoryId, authentication);
+    }
+
+    @GetMapping("/conditions")
+    public List<Condition> getConditions(
+            Authentication authentication
+    ) {
+        return categoryService.getConditions(authentication);
     }
 }

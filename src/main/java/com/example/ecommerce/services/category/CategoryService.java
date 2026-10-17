@@ -2,6 +2,7 @@ package com.example.ecommerce.services.category;
 
 import com.example.ecommerce.dtos.category.CategoryDetailsResponse;
 import com.example.ecommerce.dtos.category.CategorySummaryResponse;
+import com.example.ecommerce.entitites.product.enums.Condition;
 import com.example.ecommerce.entitites.product.enums.Size;
 import com.example.ecommerce.entitites.product.productEntities.Category;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
@@ -60,5 +61,11 @@ public class CategoryService {
         return Stream.of(Size.values())
                 .filter(size -> size.getType() == category.getSizeType())
                 .toList();
+    }
+
+    public List<Condition> getConditions(Authentication authentication) {
+        currentUserProvider.get(authentication);
+
+        return List.of(Condition.values());
     }
 }
