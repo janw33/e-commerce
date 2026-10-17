@@ -11,4 +11,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByExternalIdAndActiveTrue(String externalId);
 
     boolean existsByExternalIdAndActiveTrue(String externalId);
+
+    Optional<User> findByExternalId(String externalId);
 }

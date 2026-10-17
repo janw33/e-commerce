@@ -1,7 +1,9 @@
 package com.example.ecommerce.services.user;
 
 import com.example.ecommerce.entitites.user.User;
+import com.example.ecommerce.exceptions.user.UserInactiveException;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -26,8 +28,26 @@ public class UserProvisioningService {
     public User getOrCreate(Authentication authentication) {
         String externalId = authentication.getName();
 
-        return userRepository.findByExternalIdAndActiveTrue(externalId)
-                .orElseGet(() -> createUser(authentication));
+        User user = userRepository.findByExternalId(externalId)
+                .orElseGet(() -> createOrGetUser(authentication, externalId));
+
+        if (!user.isActive()) {
+            throw new UserInactiveException();
+        }
+
+        return user;
+    }
+
+    private User createOrGetUser(
+            Authentication authentication,
+            String externalId
+    ) {
+        try {
+            return createUser(authentication);
+        } catch (DataIntegrityViolationException exception) {
+            return userRepository.findByExternalId(externalId)
+                    .orElseThrow(() -> exception);
+        }
     }
 
     private User createUser(Authentication authentication) {

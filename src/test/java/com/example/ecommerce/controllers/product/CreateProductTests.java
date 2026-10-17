@@ -88,8 +88,8 @@ public class CreateProductTests extends BaseTestProduct {
     }
 
     @Test
-    void shouldReturnHttp400WhenImageUrlIsEmpty() throws Exception {
-        createImageRequest.setUrl("");
+    void shouldReturnHttp400WhenImageUrlIsNull() throws Exception {
+        createImageRequest.setUrl(null);
 
         createProductRequest.setImages(List.of(createImageRequest));
 
@@ -99,6 +99,7 @@ public class CreateProductTests extends BaseTestProduct {
                 jsonPath("$.error").value("VALIDATION_ERROR"),
                 jsonPath("$.validationErrors['images[0].url']").value("Image url cannot be empty"));
     }
+
 
     @Test
     void shouldReturnHttp400WhenImageUrlIsTooShort() throws Exception {

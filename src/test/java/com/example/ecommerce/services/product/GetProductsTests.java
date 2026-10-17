@@ -3,6 +3,7 @@ package com.example.ecommerce.services.product;
 import com.example.ecommerce.BaseTest.product.BaseTestProduct;
 import com.example.ecommerce.dtos.product.ProductSummaryProjection;
 import com.example.ecommerce.dtos.product.ProductSummaryResponse;
+import com.example.ecommerce.entitites.product.enums.ProductSortBy;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.mappers.image.ImageMapper;
 import com.example.ecommerce.mappers.product.ProductMapper;
@@ -106,7 +107,7 @@ public class GetProductsTests extends BaseTestProduct {
                 .thenReturn(page);
 
         Page<ProductSummaryResponse> result = productService.getProducts(null, null, null, null,
-                null, null, null, null, null, null, authentication, Pageable.unpaged());
+                null, null, null, null, ProductSortBy.RELEVANCE, null, authentication, Pageable.unpaged());
 
         ProductSummaryResponse first = result.getContent().getFirst();
 

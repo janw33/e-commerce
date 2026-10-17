@@ -4,6 +4,7 @@ import com.example.ecommerce.BaseTest.product.BaseTestProduct;
 import com.example.ecommerce.dtos.brand.BrandResponse;
 import com.example.ecommerce.dtos.product.CreateProductRequest;
 import com.example.ecommerce.dtos.product.ProductSummaryResponse;
+import com.example.ecommerce.entitites.product.enums.ProductSortBy;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.services.product.ProductService;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -82,7 +84,7 @@ public class GetProductsTests extends BaseTestProduct {
 
     @Test
     void shouldReturnHttp404WhenUserIsNotFound() throws Exception {
-        when(productService.getProducts(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(Authentication.class), any(Pageable.class)))
+        when(productService.getProducts(any(), any(), any(), any(), any(), any(), any(), any(), eq(ProductSortBy.RELEVANCE), any(), any(Authentication.class), any(Pageable.class)))
                 .thenThrow(new UserNotFoundException());
 
         performGet(
@@ -97,7 +99,7 @@ public class GetProductsTests extends BaseTestProduct {
         Page<ProductSummaryResponse> page =
                 new PageImpl<>(List.of(productSummaryResponse));
 
-        when(productService.getProducts(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(Authentication.class), any(Pageable.class)))
+        when(productService.getProducts(any(), any(), any(), any(), any(), any(), any(), any(), eq(ProductSortBy.RELEVANCE), any(), any(Authentication.class), any(Pageable.class)))
                 .thenReturn(page);
 
         performGet(

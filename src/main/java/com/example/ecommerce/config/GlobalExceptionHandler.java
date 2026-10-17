@@ -7,6 +7,7 @@ import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
 import com.example.ecommerce.exceptions.product.InvalidSizeTypeException;
 import com.example.ecommerce.exceptions.product.InvalidStatusException;
 import com.example.ecommerce.exceptions.product.ProductNotFoundException;
+import com.example.ecommerce.exceptions.user.UserInactiveException;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.exceptions.validation.ValidationErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -64,6 +65,22 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(UserInactiveException.class)
+    public ResponseEntity<ErrorResponse> handeUserInactiveException(
+            UserInactiveException exception,
+            HttpServletRequest request
+    ) {
+        ErrorResponse error = ErrorResponse.builder()
+                .status(HttpStatus.FORBIDDEN.value())
+                .error("USER_INACTIVE")
+                .message(exception.getMessage())
+                .path(request.getRequestURI())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
     @ExceptionHandler(CategoryNotFoundException.class)

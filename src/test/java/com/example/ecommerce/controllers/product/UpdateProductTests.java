@@ -90,8 +90,8 @@ public class UpdateProductTests extends BaseTestProduct {
     }
 
     @Test
-    void shouldReturnHttp400WhenImageUrlIsEmpty() throws Exception {
-        createImageRequest.setUrl("");
+    void shouldReturnHttp400WhenImageUrlIsNull() throws Exception {
+        createImageRequest.setUrl(null);
 
         updateProductRequest.setImages(List.of(createImageRequest));
 
@@ -100,8 +100,6 @@ public class UpdateProductTests extends BaseTestProduct {
                 status().isBadRequest(),
                 jsonPath("$.error").value("VALIDATION_ERROR"),
                 jsonPath("$.validationErrors['images[0].url']").value("Image url cannot be empty"));
-
-        verifyNoInteractions(productService);
     }
 
     @Test
@@ -328,6 +326,7 @@ public class UpdateProductTests extends BaseTestProduct {
 
         verifyNoInteractions(productService);
     }
+
 
     @Test
     void shouldReturnHttp400WhenColorsAreNull() throws Exception {

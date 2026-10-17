@@ -2,18 +2,21 @@ package com.example.ecommerce.services.user;
 
 import com.example.ecommerce.BaseTest.user.BaseTestUser;
 import com.example.ecommerce.entitites.user.User;
+import com.example.ecommerce.exceptions.user.UserInactiveException;
 import com.example.ecommerce.repository.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -29,19 +32,65 @@ public class UserProvisioningTests extends BaseTestUser {
     private UserProvisioningService userProvisioningService;
 
     @Test
+    void shouldThrowUserInactiveException() {
+        user.setActive(false);
+
+        when(authentication.getName())
+                .thenReturn(user.getExternalId());
+
+        when(userRepository.findByExternalId(user.getExternalId()))
+                .thenReturn(Optional.of(user));
+
+        assertThrows(
+                UserInactiveException.class,
+                () -> userProvisioningService.getOrCreate(authentication)
+        );
+
+        verify(userRepository).findByExternalId(user.getExternalId());
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
     void shouldGetUserWhenUserExists() {
         when(authentication.getName())
                 .thenReturn(user.getExternalId());
 
-        when(userRepository.findByExternalIdAndActiveTrue(user.getExternalId()))
+        when(userRepository.findByExternalId(user.getExternalId()))
                 .thenReturn(Optional.of(user));
 
         User result = userProvisioningService.getOrCreate(authentication);
 
         assertEquals(user, result);
 
-        verify(userRepository).findByExternalIdAndActiveTrue(user.getExternalId());
+        verify(userRepository).findByExternalId(user.getExternalId());
         verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldReturnUserCreatedByAnotherRequest() {
+        when(authentication.getName())
+                .thenReturn(user.getExternalId());
+
+        when(userRepository.findByExternalId(user.getExternalId()))
+                .thenReturn(Optional.empty(), Optional.of(user));
+
+        Jwt jwt = mock(Jwt.class);
+
+        when(authentication.getPrincipal()).thenReturn(jwt);
+
+        when(userRepository.save(any(User.class)))
+                .thenThrow(new DataIntegrityViolationException(
+                        "Duplicate external id"
+                ));
+
+        User result = userProvisioningService.getOrCreate(authentication);
+
+        assertEquals(user, result);
+
+        verify(userRepository, times(2))
+                .findByExternalId(user.getExternalId());
+
+        verify(userRepository).save(any(User.class));
     }
 
     @Test
@@ -51,7 +100,7 @@ public class UserProvisioningTests extends BaseTestUser {
         when(authentication.getName())
                 .thenReturn("NotRecordedExternalId");
 
-        when(userRepository.findByExternalIdAndActiveTrue("NotRecordedExternalId"))
+        when(userRepository.findByExternalId("NotRecordedExternalId"))
                 .thenReturn(Optional.empty());
 
         when(authentication.getPrincipal())
@@ -83,7 +132,7 @@ public class UserProvisioningTests extends BaseTestUser {
         assertEquals(user.getEmail(), result.getEmail());
         assertEquals(user.getPhoneNumber(), result.getPhoneNumber());
 
-        verify(userRepository).findByExternalIdAndActiveTrue("NotRecordedExternalId");
+        verify(userRepository).findByExternalId("NotRecordedExternalId");
         verify(userRepository).save(any(User.class));
     }
 }
