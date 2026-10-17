@@ -108,7 +108,6 @@ public class GetProductTests extends BaseTestProduct {
                 jsonPath("$.title").value(product.getTitle()),
                 jsonPath("$.description").value(product.getDescription()),
                 jsonPath("$.price").value(product.getPrice()),
-                jsonPath("$.currency").value(product.getCurrency().name()),
                 jsonPath("$.condition").value(product.getCondition().name()),
                 jsonPath("$.size").value(product.getSize().name()),
                 jsonPath("$.shippingSize").value(product.getShippingSize().name()),

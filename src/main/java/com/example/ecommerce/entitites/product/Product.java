@@ -47,10 +47,6 @@ public class Product {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 3)
-    private Currency currency;
-
     @ElementCollection
     @Enumerated(EnumType.STRING)
     @CollectionTable(

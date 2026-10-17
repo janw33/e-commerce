@@ -70,7 +70,7 @@ public class GetCategoriesTests extends BaseTestCategory {
 
     @Test
     void shouldReturnHttp404WhenUserIsNotFound() throws Exception {
-        when(categoryService.getCategories(any(Authentication.class), any(), any(Pageable.class)))
+        when(categoryService.getCategories(any(Authentication.class), any(Pageable.class)))
                 .thenThrow(new UserNotFoundException());
 
         performGet(
@@ -84,7 +84,7 @@ public class GetCategoriesTests extends BaseTestCategory {
         Page<CategorySummaryResponse> page =
                 new PageImpl<>(List.of(categorySummaryResponse));
 
-        when(categoryService.getCategories(any(Authentication.class), any(), any(Pageable.class)))
+        when(categoryService.getCategories(any(Authentication.class), any(Pageable.class)))
                 .thenReturn(page);
 
         performGet(

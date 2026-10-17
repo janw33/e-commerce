@@ -173,7 +173,6 @@ public class CreateProductTests extends BaseTestProduct {
         assertEquals(product.getTitle(), result.getTitle());
         assertEquals(product.getDescription(), result.getDescription());
         assertEquals(product.getPrice(), result.getPrice());
-        assertEquals(product.getCurrency(), result.getCurrency());
         assertEquals(product.getColors(), result.getColors());
         assertEquals(product.getCondition(), result.getCondition());
         assertEquals(product.getMaterials(), result.getMaterials());

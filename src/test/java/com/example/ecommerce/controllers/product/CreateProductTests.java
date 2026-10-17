@@ -369,16 +369,6 @@ public class CreateProductTests extends BaseTestProduct {
     }
 
     @Test
-    void shouldReturnHttp400WhenCurrencyIsNull() throws Exception {
-        createProductRequest.setCurrency(null);
-        performPost(
-                createProductRequest,
-                status().isBadRequest(),
-                jsonPath("$.error").value("VALIDATION_ERROR"),
-                jsonPath("$.validationErrors.currency").value("Currency cannot be null"));
-    }
-
-    @Test
     void shouldReturnHttp400WhenShippingSizeIsNull() throws Exception {
         createProductRequest.setShippingSize(null);
         performPost(
@@ -441,7 +431,6 @@ public class CreateProductTests extends BaseTestProduct {
                 jsonPath("$.title").value(product.getTitle()),
                 jsonPath("$.description").value(product.getDescription()),
                 jsonPath("$.price").value(product.getPrice()),
-                jsonPath("$.currency").value(product.getCurrency().toString()),
                 jsonPath("$.condition").value(product.getCondition().toString()),
                 jsonPath("$.size").value(product.getSize().toString()),
                 jsonPath("$.shippingSize").value(product.getShippingSize().toString()),

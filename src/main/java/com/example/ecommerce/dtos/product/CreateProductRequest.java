@@ -53,9 +53,6 @@ public class CreateProductRequest {
     @Digits(integer = 8, fraction = 2, message = "Price must have at most 8 integer digits and 2 decimal places")
     private BigDecimal price;
 
-    @NotNull(message = "Currency cannot be null")
-    private Currency currency;
-
     @NotNull(message = "Shipping size cannot be null")
     private ShippingSize shippingSize;
 }

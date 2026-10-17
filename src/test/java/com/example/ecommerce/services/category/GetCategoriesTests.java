@@ -54,10 +54,10 @@ public class GetCategoriesTests extends BaseTestCategory {
 
         assertThrows(
                 UserNotFoundException.class,
-                () -> categoryService.getCategories(authentication, null, Pageable.unpaged())
+                () -> categoryService.getCategories(authentication, Pageable.unpaged())
         );
 
-        verify(categoryRepository, never()).findCategories(any(), any());
+        verify(categoryRepository, never()).getCategories(any());
     }
 
     @Test
@@ -70,16 +70,17 @@ public class GetCategoriesTests extends BaseTestCategory {
 
         when(projection.getId()).thenReturn(category.getId());
         when(projection.getName()).thenReturn(category.getName());
+        when(projection.getParentId()).thenReturn(category.getParent().getId());
         when(projection.getHasChildren()).thenReturn(true);
 
         Page<CategorySummaryProjection> page =
                 new PageImpl<>(List.of(projection));
 
-        when(categoryRepository.findCategories(null, Pageable.unpaged()))
+        when(categoryRepository.getCategories( Pageable.unpaged()))
                 .thenReturn(page);
 
         Page<CategorySummaryResponse> result = categoryService.getCategories(
-                authentication, null, Pageable.unpaged());
+                authentication, Pageable.unpaged());
 
         assertEquals(1, result.getTotalElements());
 
@@ -87,8 +88,9 @@ public class GetCategoriesTests extends BaseTestCategory {
 
         assertEquals(projection.getId(), first.getId());
         assertEquals(projection.getName(), first.getName());
+        assertEquals(projection.getParentId(), first.getParentId());
         assertTrue(first.isHasChildren());
 
-        verify(categoryRepository).findCategories(null, Pageable.unpaged());
+        verify(categoryRepository).getCategories(Pageable.unpaged());
     }
 }

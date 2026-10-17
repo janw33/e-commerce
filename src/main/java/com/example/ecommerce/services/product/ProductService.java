@@ -108,7 +108,6 @@ public class ProductService {
         product.setColors(request.getColors());
         product.setMaterials(request.getMaterials());
         product.setPrice(request.getPrice());
-        product.setCurrency(request.getCurrency());
         product.setShippingSize(request.getShippingSize());
 
         long likeCount = likeRepository.countByProductId(product.getId());

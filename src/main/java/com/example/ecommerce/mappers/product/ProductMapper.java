@@ -21,7 +21,6 @@ public class ProductMapper {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .price(request.getPrice())
-                .currency(request.getCurrency())
                 .colors(request.getColors())
                 .condition(request.getCondition())
                 .materials(request.getMaterials())
@@ -44,7 +43,6 @@ public class ProductMapper {
                 .title(product.getTitle())
                 .description(product.getDescription())
                 .price(product.getPrice()) //
-                .currency(product.getCurrency())
                 .colors(product.getColors())
                 .condition(product.getCondition()) //
                 .materials(product.getMaterials())

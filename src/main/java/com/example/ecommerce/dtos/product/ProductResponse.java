@@ -30,7 +30,6 @@ public class ProductResponse {
     private String description;
 
     private BigDecimal price;
-    private Currency currency;
 
     private Set<Color> colors;
     private Condition condition;

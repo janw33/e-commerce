@@ -31,13 +31,12 @@ public class CategoryService {
 
     public Page<CategorySummaryResponse> getCategories(
             Authentication authentication,
-            Long parentId,
             Pageable pageable
     ) {
         currentUserProvider.get(authentication);
 
         return categoryRepository
-                .findCategories(parentId, pageable)
+                .getCategories(pageable)
                 .map(categoryMapper::toSummaryResponse);
     }
 

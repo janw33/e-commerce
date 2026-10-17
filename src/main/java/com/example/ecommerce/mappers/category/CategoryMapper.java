@@ -12,6 +12,7 @@ public class CategoryMapper {
         return CategorySummaryResponse.builder()
                 .id(category.getId())
                 .name(category.getName())
+                .parentId(category.getParentId())
                 .hasChildren(category.getHasChildren())
                 .build();
     }

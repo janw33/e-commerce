@@ -11,5 +11,6 @@ import lombok.*;
 public class CategorySummaryResponse {
     private Long id;
     private String name;
+    private Long parentId;
     private boolean hasChildren;
 }

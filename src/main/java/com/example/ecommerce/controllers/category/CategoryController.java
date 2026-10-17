@@ -24,10 +24,9 @@ public class CategoryController {
     @GetMapping
     public Page<CategorySummaryResponse> getCategories(
             Authentication authentication,
-            @RequestParam(required = false) Long parentId,
             Pageable pageable
     ) {
-        return categoryService.getCategories(authentication, parentId, pageable);
+        return categoryService.getCategories(authentication, pageable);
     }
 
     @GetMapping(path = "/{id}")

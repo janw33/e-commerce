@@ -127,7 +127,6 @@ public final class TestDataUtil {
                 .title("test1")
                 .description("test1")
                 .price(BigDecimal.TEN)
-                .currency(Currency.EUR)
                 .colors(Set.of(Color.BLUE))
                 .condition(Condition.NEW)
                 .materials(Set.of(Material.COTTON))
@@ -155,7 +154,6 @@ public final class TestDataUtil {
                 .colors(product().getColors())
                 .materials(product().getMaterials())
                 .price(product().getPrice())
-                .currency(product().getCurrency())
                 .build();
     }
 
@@ -170,7 +168,6 @@ public final class TestDataUtil {
                 .title(product().getTitle())
                 .description(product().getDescription())
                 .price(product().getPrice())
-                .currency(product().getCurrency())
                 .colors(product().getColors())
                 .condition(product().getCondition())
                 .materials(product().getMaterials())
@@ -200,7 +197,6 @@ public final class TestDataUtil {
                 .colors(product().getColors())
                 .materials(product().getMaterials())
                 .price(product().getPrice())
-                .currency(product().getCurrency())
                 .build();
     }
 

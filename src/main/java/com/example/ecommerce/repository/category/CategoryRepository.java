@@ -14,27 +14,30 @@ import java.util.Optional;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-    @Query("""
-    SELECT
-        c.id AS id,
-        c.name AS name,
-        CASE
-            WHEN EXISTS (
-                SELECT 1
-                FROM Category child
-                WHERE child.parent.id = c.id
-            )
-            THEN true
-            ELSE false
-        END AS hasChildren
-    FROM Category c
-    WHERE (:parentId IS NULL AND c.parent IS NULL)
-       OR (:parentId IS NOT NULL AND c.parent.id = :parentId)
-""")
-    Page<CategorySummaryProjection> findCategories(
-            @Param("parentId") Long parentId,
-            Pageable pageable
-    );
+    @Query(
+            value = """
+        SELECT
+            c.id AS id,
+            c.name AS name,
+            c.parent.id AS parentId,
+            CASE
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM Category child
+                    WHERE child.parent.id = c.id
+                )
+                THEN true
+                ELSE false
+            END AS hasChildren
+        FROM Category c
+        ORDER BY c.id
+        """,
+            countQuery = """
+        SELECT COUNT(c)
+        FROM Category c
+        """
+    )
+    Page<CategorySummaryProjection> getCategories(Pageable pageable);
 
     @Query("""
     SELECT
