@@ -52,7 +52,7 @@ public class ProductController {
             @RequestParam (required = false) BigDecimal maxPrice,
             @RequestParam (required = false) Set<Material> materials,
             @RequestParam (defaultValue = "RELEVANCE", required = false) ProductSortBy sortBy,
-            @RequestParam (required = false) String search,
+            @RequestParam (required = false, defaultValue = "") String search,
             Authentication authentication,
             @PageableDefault(size = 100) Pageable pageable
     ) {

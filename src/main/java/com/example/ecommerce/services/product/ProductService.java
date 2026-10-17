@@ -114,6 +114,7 @@ public class ProductService {
         long likeCount = likeRepository.countByProductId(product.getId());
 
         imageRepository.deleteAllByProductId(product.getId());
+        imageRepository.flush();
 
         List<Image> newImages = IntStream.range(0, request.getImages().size())
                 .mapToObj(i -> imageMapper.toEntity(
@@ -135,7 +136,7 @@ public class ProductService {
 
         currentUserProvider.get(authentication);
 
-        return productRepository.findProducts(categoryId, size, brandId, condition, colors, minPrice, maxPrice, materials, sortBy, search, pageable)
+        return productRepository.findProducts(categoryId, size, brandId, condition, colors, minPrice, maxPrice, materials, sortBy.name(), search, pageable)
                 .map(productMapper::toSummaryResponse);
     }
 

@@ -66,11 +66,14 @@ public class GetImagesTests extends BaseTestProduct {
     }
 
     @Test
-    void shouldThrowProductNotFoundExceptionWhenProductDoesntExistOrIsDeleted() {
+    void shouldThrowProductNotFoundExceptionWhenProductDoesntExist() {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findByIdAndStatusIn(product.getId(), List.of(Status.ACTIVE, Status.SOLD)))
+        when(productRepository.findByIdAndStatus(product.getId(), Status.ACTIVE))
+                .thenReturn(Optional.empty());
+
+        when(productRepository.findBySellerAndIdAndStatus(user, product.getId(), Status.SOLD))
                 .thenReturn(Optional.empty());
 
         assertThrows(
@@ -82,11 +85,11 @@ public class GetImagesTests extends BaseTestProduct {
     }
 
     @Test
-    void shouldReturnImagesForProduct() {
+    void shouldReturnImagesForActiveProduct() {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findByIdAndStatusIn(product.getId(), List.of(Status.ACTIVE, Status.SOLD)))
+        when(productRepository.findByIdAndStatus(product.getId(), Status.ACTIVE))
                 .thenReturn(Optional.of(product));
 
         when(imageRepository.findAllByProductIdOrderByPositionAsc(product.getId()))
@@ -98,10 +101,32 @@ public class GetImagesTests extends BaseTestProduct {
         assertEquals(image.getId(), result.getFirst().getId());
         assertEquals(image.getUrl(), result.getFirst().getUrl());
 
-        verify(productRepository).findByIdAndStatusIn(
-                eq(product.getId()),
-                eq(List.of(Status.ACTIVE, Status.SOLD))
-        );
+        verify(productRepository, never()).findBySellerAndIdAndStatus(any(), any(), any());
+        verify(imageRepository).findAllByProductIdOrderByPositionAsc(product.getId());
+    }
+
+    @Test
+    void shouldReturnImagesForSoldProduct() {
+        product.setStatus(Status.SOLD);
+
+        when(currentUserProvider.get(authentication))
+                .thenReturn(user);
+
+        when(productRepository.findByIdAndStatus(product.getId(), Status.ACTIVE))
+                .thenReturn(Optional.empty());
+
+        when(productRepository.findBySellerAndIdAndStatus(user, product.getId(), Status.SOLD))
+                .thenReturn(Optional.of(product));
+
+        when(imageRepository.findAllByProductIdOrderByPositionAsc(product.getId()))
+                .thenReturn(List.of(image));
+
+        List<ImageResponse> result = imageService.getImages(authentication, product.getId());
+
+        assertEquals(1, result.size());
+        assertEquals(image.getId(), result.getFirst().getId());
+        assertEquals(image.getUrl(), result.getFirst().getUrl());
+
         verify(imageRepository).findAllByProductIdOrderByPositionAsc(product.getId());
     }
 }

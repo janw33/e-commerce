@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
@@ -218,7 +219,11 @@ public class UpdateProductTests extends BaseTestProduct {
         assertEquals(1, result.getImages().size());
         assertEquals(image.getUrl(), result.getImages().getFirst().getUrl());
 
-        verify(imageRepository).deleteAllByProductId(product.getId());
+        InOrder inOrder = inOrder(imageRepository);
+
+        inOrder.verify(imageRepository).deleteAllByProductId(product.getId());
+        inOrder.verify(imageRepository).flush();
+        inOrder.verify(imageRepository).saveAll(any());
 
         ArgumentCaptor<List<Image>> captor = ArgumentCaptor.forClass(List.class);
 

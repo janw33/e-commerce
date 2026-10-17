@@ -57,10 +57,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                     AND m IN :materials
               )
           )
-          AND (
-              :search IS NULL OR
-              LOWER(p.title) LIKE LOWER(CONCAT('%', :search, '%'))
-          )
+          AND LOWER(p.title) LIKE LOWER(CONCAT('%', :search, '%'))
           AND i.position = (
               SELECT MIN(i2.position)
               FROM Image i2
@@ -112,10 +109,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                     AND m IN :materials
               )
           )
-          AND (
-              :search IS NULL OR
-              LOWER(p.title) LIKE LOWER(CONCAT('%', :search, '%'))
-          )
+          AND LOWER(p.title) LIKE LOWER(CONCAT('%', :search, '%'))
         """
     )
     Page<ProductSummaryProjection> findProducts(
@@ -127,7 +121,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("minPrice") BigDecimal minPrice,
             @Param("maxPrice") BigDecimal maxPrice,
             @Param("materials") Set<Material> materials,
-            @Param("sortBy") ProductSortBy sortBy,
+            @Param("sortBy") String sortBy,
             @Param("search") String search,
             Pageable pageable
     );
