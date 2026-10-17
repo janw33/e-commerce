@@ -101,6 +101,32 @@ public class CreateProductTests extends BaseTestProduct {
     }
 
     @Test
+    void shouldReturnHttp400WhenImageUrlIsTooShort() throws Exception {
+        createImageRequest.setUrl("a");
+
+        createProductRequest.setImages(List.of(createImageRequest));
+
+        performPost(
+                createProductRequest,
+                status().isBadRequest(),
+                jsonPath("$.error").value("VALIDATION_ERROR"),
+                jsonPath("$.validationErrors['images[0].url']").value("Image url must be between 2 and 1000 characters"));
+    }
+
+    @Test
+    void shouldReturnHttp400WhenImageUrlIsTooLong() throws Exception {
+        createImageRequest.setUrl("a".repeat(1001));
+
+        createProductRequest.setImages(List.of(createImageRequest));
+
+        performPost(
+                createProductRequest,
+                status().isBadRequest(),
+                jsonPath("$.error").value("VALIDATION_ERROR"),
+                jsonPath("$.validationErrors['images[0].url']").value("Image url must be between 2 and 1000 characters"));
+    }
+
+    @Test
     void shouldReturnHttp400WhenImagesAreNull() throws Exception {
         createProductRequest.setImages(null);
         performPost(
