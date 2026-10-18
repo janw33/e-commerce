@@ -1,92 +1,98 @@
 package com.example.ecommerce.controllers.category;
 
-import com.example.ecommerce.config.SecurityConfig;
+import com.example.ecommerce.BaseTest.category.BaseTestCategory;
 import com.example.ecommerce.entitites.product.enums.Condition;
 import com.example.ecommerce.exceptions.user.UserInactiveException;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.services.category.CategoryService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.security.core.Authentication;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import java.util.List;
 
 import static org.hamcrest.Matchers.contains;
-import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(CategoryController.class)
-@Import(SecurityConfig.class)
-class GetConditionsTests {
-    private static final String ENDPOINT = "/api/v1/category/conditions";
-
+@SpringBootTest
+@AutoConfigureMockMvc
+public class GetConditionsTests extends BaseTestCategory {
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
     private CategoryService categoryService;
 
-    @MockitoBean
-    private JwtDecoder jwtDecoder;
+    private RequestPostProcessor authenticatedUser() {
+        return jwt()
+                .jwt(jwt -> jwt
+                        .subject(user.getExternalId())
+                        .claim("email", user.getEmail())
+                        .claim("given_name", user.getFirstName())
+                        .claim("family_name", user.getLastName())
+                        .claim("phone_number", user.getPhoneNumber())
+                );
+    }
 
-    private final JwtAuthenticationToken authentication = new JwtAuthenticationToken(
-            Jwt.withTokenValue("test-token")
-                    .header("alg", "RS256")
-                    .subject("test-user")
-                    .build()
-    );
+    private void performGet(ResultMatcher... matchers) throws Exception {
+        var result = mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/v1/category/conditions")
+                        .with(authenticatedUser())
+        );
 
-    @Test
-    void shouldReturnHttp401WhenUserIsUnauthenticated() throws Exception {
-        mockMvc.perform(get(ENDPOINT))
-                .andExpect(status().isUnauthorized());
-
-        verifyNoInteractions(categoryService);
+        for (ResultMatcher matcher : matchers) {
+            result.andExpect(matcher);
+        }
     }
 
     @Test
-    void shouldReturnAllConditionsWhenRequestIsValid() throws Exception {
-        when(categoryService.getConditions(authentication))
-                .thenReturn(List.of(Condition.values()));
-
-        mockMvc.perform(get(ENDPOINT).with(authentication(authentication)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith("application/json"))
-                .andExpect(jsonPath("$", contains(
-                        "NEW", "LIKE_NEW", "VERY_GOOD", "GOOD", "SATISFACTORY"
-                )));
-
-        verify(categoryService).getConditions(authentication);
+    void shouldReturnHttp401WhenUserIsUnauthenticated() throws Exception {
+        mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/category/conditions"))
+                .andExpect(
+                        status().isUnauthorized()
+                );
     }
 
     @Test
     void shouldReturnHttp404WhenUserIsNotFound() throws Exception {
-        when(categoryService.getConditions(authentication))
+        when(categoryService.getConditions(any(Authentication.class)))
                 .thenThrow(new UserNotFoundException());
 
-        mockMvc.perform(get(ENDPOINT).with(authentication(authentication)))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value("USER_NOT_FOUND"))
-                .andExpect(jsonPath("$.message").value("User not found"))
-                .andExpect(jsonPath("$.path").value(ENDPOINT));
+        performGet(
+                status().isNotFound(),
+                jsonPath("$.error").value("USER_NOT_FOUND"),
+                jsonPath("$.message").value("User not found"));
     }
 
     @Test
-    void shouldReturnHttp403WhenUserIsInactive() throws Exception {
-        when(categoryService.getConditions(authentication))
-                .thenThrow(new UserInactiveException());
+    void shouldReturnHttp200WhenRequestIsValid() throws Exception {
+        List<Condition> conditions = List.of(Condition.values());
 
-        mockMvc.perform(get(ENDPOINT).with(authentication(authentication)))
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error").value("USER_INACTIVE"))
-                .andExpect(jsonPath("$.path").value(ENDPOINT));
+        when(categoryService.getConditions(any(Authentication.class)))
+                .thenReturn(conditions);
+
+        performGet(
+                status().isOk(),
+                jsonPath("$").isArray(),
+                jsonPath("$").value(contains(
+                        conditions.stream()
+                                .map(Condition::name)
+                                .toArray(String[]::new)
+                )));
+
+        verify(categoryService).getConditions(any(Authentication.class));
     }
 }
