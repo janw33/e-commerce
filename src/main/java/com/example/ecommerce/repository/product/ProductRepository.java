@@ -26,6 +26,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             p.title AS title,
             i.url AS imageUrl,
             p.price AS price,
+            p.size As size,
             p.condition AS condition,
             p.brand.name AS brandName,
             COUNT(DISTINCT l.id) AS likeCount
@@ -69,6 +70,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             i.url,
             p.price,
             p.condition,
+            p.size,
             p.brand.name,
             p.createdAt,
             p.viewCount

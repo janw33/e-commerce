@@ -207,6 +207,7 @@ public final class TestDataUtil {
                 .imageUrl(image().getUrl())
                 .price(product().getPrice())
                 .condition(product().getCondition())
+                .size(product().getSize())
                 .brandName(product().getBrand().getName())
                 .likeCount(0L)
                 .build();

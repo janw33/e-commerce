@@ -83,7 +83,7 @@ public class ProductService {
         return productMapper.toResponse(savedProduct, 0, images.stream().map(imageMapper::toResponse).toList());
     }
 
-    @Transactional // ewentualnie dodac zeby zdjecia nie byly usuwane dla kazdego requestu
+    @Transactional
     public ProductResponse updateProduct(UpdateProductRequest request, Authentication authentication, Long id) {
         User currentUser = currentUserProvider.get(authentication);
 

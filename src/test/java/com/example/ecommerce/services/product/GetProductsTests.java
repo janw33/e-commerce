@@ -98,6 +98,7 @@ public class GetProductsTests extends BaseTestProduct {
         when(projection.getImageUrl()).thenReturn(image.getUrl());
         when(projection.getPrice()).thenReturn(product.getPrice());
         when(projection.getCondition()).thenReturn(product.getCondition());
+        when(projection.getSize()).thenReturn(product.getSize());
         when(projection.getBrandName()).thenReturn(product.getBrand().getName());
         when(projection.getLikeCount()).thenReturn(0L);
 
@@ -116,9 +117,10 @@ public class GetProductsTests extends BaseTestProduct {
         assertEquals(projection.getImageUrl(), first.getImageUrl());
         assertEquals(projection.getPrice(), first.getPrice());
         assertEquals(projection.getCondition(), first.getCondition());
+        assertEquals(projection.getSize(), first.getSize());
         assertEquals(projection.getBrandName(), first.getBrandName());
         assertEquals(projection.getLikeCount(), first.getLikeCount());
 
-        verify(productRepository).findProducts(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any());
+        verify(productRepository).findProducts(any(), any(), any(), any(), any(), any(), any(), any(), eq(ProductSortBy.RELEVANCE.name()), any(), any());
     }
 }

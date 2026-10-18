@@ -66,6 +66,7 @@ public class ProductMapper {
                 .imageUrl(projection.getImageUrl())
                 .price(projection.getPrice())
                 .condition(projection.getCondition())
+                .size(projection.getSize())
                 .brandName(projection.getBrandName())
                 .likeCount(projection.getLikeCount())
                 .build();

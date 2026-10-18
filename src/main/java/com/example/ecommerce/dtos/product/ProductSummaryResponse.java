@@ -1,6 +1,7 @@
 package com.example.ecommerce.dtos.product;
 
 import com.example.ecommerce.entitites.product.enums.Condition;
+import com.example.ecommerce.entitites.product.enums.Size;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -16,6 +17,7 @@ public class ProductSummaryResponse {
     private String imageUrl;
     private BigDecimal price;
     private Condition condition;
+    private Size size;
     private String brandName;
     private long likeCount;
 }
