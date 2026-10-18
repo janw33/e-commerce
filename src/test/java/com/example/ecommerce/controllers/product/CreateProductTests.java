@@ -22,6 +22,7 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -98,6 +99,19 @@ public class CreateProductTests extends BaseTestProduct {
                 status().isBadRequest(),
                 jsonPath("$.error").value("VALIDATION_ERROR"),
                 jsonPath("$.validationErrors['images[0].url']").value("Image url cannot be empty"));
+    }
+
+    @Test
+    void shouldReturnHttp400WhenCreateImageRequestIsNull() throws Exception {
+        createProductRequest.setImages(
+                Arrays.asList(null, createImageRequest)
+        );
+
+        performPost(
+                createProductRequest,
+                status().isBadRequest(),
+                jsonPath("$.error").value("VALIDATION_ERROR"),
+                jsonPath("$.validationErrors['images[0]']").value("Image cannot be null"));
     }
 
 

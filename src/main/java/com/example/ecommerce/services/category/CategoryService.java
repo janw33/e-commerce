@@ -2,8 +2,7 @@ package com.example.ecommerce.services.category;
 
 import com.example.ecommerce.dtos.category.CategoryDetailsResponse;
 import com.example.ecommerce.dtos.category.CategorySummaryResponse;
-import com.example.ecommerce.entitites.product.enums.Condition;
-import com.example.ecommerce.entitites.product.enums.Size;
+import com.example.ecommerce.entitites.product.enums.*;
 import com.example.ecommerce.entitites.product.productEntities.Category;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
 import com.example.ecommerce.mappers.category.CategoryMapper;
@@ -66,5 +65,23 @@ public class CategoryService {
         currentUserProvider.get(authentication);
 
         return List.of(Condition.values());
+    }
+
+    public List<Color> getColors(Authentication authentication) {
+        currentUserProvider.get(authentication);
+
+        return List.of(Color.values());
+    }
+
+    public List<Material> getMaterials(Authentication authentication) {
+        currentUserProvider.get(authentication);
+
+        return List.of(Material.values());
+    }
+
+    public List<ShippingSize> getShippingSizes(Authentication authentication) {
+        currentUserProvider.get(authentication);
+
+        return List.of(ShippingSize.values());
     }
 }

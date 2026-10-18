@@ -17,7 +17,7 @@ public interface BrandRepository extends JpaRepository<Brand, Long> {
         JOIN Product p ON p.brand = b
         WHERE p.status = 'ACTIVE'
           AND (:categoryId IS NULL OR p.category.id = :categoryId)
-          AND (:search IS NULL OR LOWER(b.name) LIKE LOWER(CONCAT('%', :search, '%')))
+          AND (LOWER(b.name) LIKE LOWER(CONCAT('%', :search, '%')))
         GROUP BY b.id, b.name
         ORDER BY COUNT(p.id) DESC
         """,
@@ -27,7 +27,7 @@ public interface BrandRepository extends JpaRepository<Brand, Long> {
         JOIN Product p ON p.brand = b
         WHERE p.status = 'ACTIVE'
           AND (:categoryId IS NULL OR p.category.id = :categoryId)
-          AND (:search IS NULL OR LOWER(b.name) LIKE LOWER(CONCAT('%', :search, '%')))
+          AND (LOWER(b.name) LIKE LOWER(CONCAT('%', :search, '%')))
         """
     )
     Page<Brand> findAllByCategoryId(

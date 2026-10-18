@@ -21,7 +21,7 @@ public class BrandController {
     public Page<BrandResponse> getBrands(
             Authentication authentication,
             @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "") String search,
             @PageableDefault(size = 30) Pageable pageable
     ) {
         return brandService.getBrands(authentication, categoryId, search, pageable);

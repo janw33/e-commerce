@@ -11,6 +11,7 @@ import com.example.ecommerce.exceptions.user.UserInactiveException;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.exceptions.validation.ValidationErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -177,5 +178,21 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ResponseEntity<ErrorResponse> handleOptimisticLockingFailure(
+            OptimisticLockingFailureException exception,
+            HttpServletRequest request
+    ) {
+        ErrorResponse error = ErrorResponse.builder()
+                .status(HttpStatus.CONFLICT.value())
+                .error("PRODUCT_MODIFICATION_CONFLICT")
+                .message("Product was modified by another request. Refresh and try again.")
+                .path(request.getRequestURI())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 }

@@ -50,6 +50,15 @@ public class GetCurrentUserTests extends BaseTestUser {
     }
 
     @Test
+    void shouldReturnHttp401WhenUserIsUnauthenticated() throws Exception {
+        mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/v1/auth/me"))
+                .andExpect(
+                        status().isUnauthorized()
+                );
+    }
+
+    @Test
     void shouldReturnHttp200WhenRequestIsValid() throws Exception {
         when(authService.getCurrentUser(any()))
                 .thenReturn(userResponse);

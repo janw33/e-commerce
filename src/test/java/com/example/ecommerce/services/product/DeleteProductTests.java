@@ -22,8 +22,7 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -108,6 +107,7 @@ public class DeleteProductTests extends BaseTestProduct {
         productService.deleteProduct(product.getId(), authentication);
 
         assertEquals(Status.DELETED, product.getStatus());
+        assertNotNull(product.getDeletedAt());
 
         verify(imageRepository).deleteAllByProductId(product.getId());
         verify(productRepository).findBySellerAndIdAndStatusIn(user, product.getId(), List.of(Status.ACTIVE, Status.SOLD));

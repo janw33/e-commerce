@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -100,6 +101,19 @@ public class UpdateProductTests extends BaseTestProduct {
                 status().isBadRequest(),
                 jsonPath("$.error").value("VALIDATION_ERROR"),
                 jsonPath("$.validationErrors['images[0].url']").value("Image url cannot be empty"));
+    }
+
+    @Test
+    void shouldReturnHttp400WhenCreateImageRequestIsNull() throws Exception {
+        updateProductRequest.setImages(
+                Arrays.asList(null, createImageRequest)
+        );
+
+        performPut(
+                updateProductRequest,
+                status().isBadRequest(),
+                jsonPath("$.error").value("VALIDATION_ERROR"),
+                jsonPath("$.validationErrors['images[0]']").value("Image cannot be null"));
     }
 
     @Test

@@ -27,6 +27,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -173,5 +174,6 @@ public class ProductService {
         imageRepository.deleteAllByProductId(product.getId());
 
         product.setStatus(Status.DELETED);
+        product.setDeletedAt(LocalDateTime.now());
     }
 }

@@ -2,8 +2,7 @@ package com.example.ecommerce.controllers.category;
 
 import com.example.ecommerce.dtos.category.CategoryDetailsResponse;
 import com.example.ecommerce.dtos.category.CategorySummaryResponse;
-import com.example.ecommerce.entitites.product.enums.Condition;
-import com.example.ecommerce.entitites.product.enums.Size;
+import com.example.ecommerce.entitites.product.enums.*;
 import com.example.ecommerce.services.category.CategoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +36,7 @@ public class CategoryController {
         return categoryService.getCategory(authentication, id);
     }
 
-    @GetMapping("/sizes")
+    @GetMapping(path = "/sizes")
     public List<Size> getSizes(
             @RequestParam(required = false) Long categoryId,
             Authentication authentication
@@ -50,5 +49,26 @@ public class CategoryController {
             Authentication authentication
     ) {
         return categoryService.getConditions(authentication);
+    }
+
+    @GetMapping(path = "/colors")
+    public List<Color> getColors (
+            Authentication authentication
+    )  {
+        return categoryService.getColors(authentication);
+    }
+
+    @GetMapping(path = "/materials")
+    public List<Material> getMaterials (
+            Authentication authentication
+    )  {
+        return categoryService.getMaterials(authentication);
+    }
+
+    @GetMapping(path = "/shipping-sizes")
+    public List<ShippingSize> getShippingSizes (
+            Authentication authentication
+    )  {
+        return categoryService.getShippingSizes(authentication);
     }
 }

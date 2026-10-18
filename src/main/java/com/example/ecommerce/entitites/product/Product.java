@@ -97,4 +97,7 @@ public class Product {
     private LocalDateTime deletedAt;
 
     private LocalDateTime soldAt;
+
+    @Version
+    private Long version;
 }
