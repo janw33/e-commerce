@@ -165,7 +165,7 @@ public class ProductService {
     }
 
     public Page<ProductSummaryResponse> getSellerProducts(Authentication authentication, Long sellerId,ProductSortBy sortBy, Pageable pageable) {
-        User currentUser = currentUserProvider.get(authentication);
+        currentUserProvider.get(authentication);
 
         return productRepository.getBySellerId(sellerId, sortBy.name(), pageable)
                 .map(productMapper::toSummaryResponse);
