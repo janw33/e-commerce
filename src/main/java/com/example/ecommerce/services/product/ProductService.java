@@ -141,11 +141,10 @@ public class ProductService {
     }
 
     public ProductResponse getProduct(Long id, Authentication authentication) {
-        User currentUser = currentUserProvider.get(authentication);
+        currentUserProvider.get(authentication);
 
-        Product product = productRepository.findByIdAndStatus(id, Status.ACTIVE)
-                .orElseGet(() -> productRepository.findBySellerAndIdAndStatus(currentUser, id, Status.SOLD)
-                        .orElseThrow(ProductNotFoundException::new));
+        Product product = productRepository.findByIdAndStatusIn(id, List.of(Status.ACTIVE, Status.SOLD))
+                        .orElseThrow(ProductNotFoundException::new);
 
         long likeCount = likeRepository.countByProductId(id);
 

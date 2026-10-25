@@ -212,4 +212,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Optional<Product> findBySellerAndIdAndStatusIn(User currentUser, Long id, Collection<Status> statuses);
 
+    Optional<Product> findByIdAndStatusIn(Long id, Collection<Status> statuses);
 }

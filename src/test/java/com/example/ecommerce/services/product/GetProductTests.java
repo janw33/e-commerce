@@ -24,6 +24,7 @@ import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -89,10 +90,7 @@ public class GetProductTests extends BaseTestProduct {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findByIdAndStatus(product.getId(), Status.ACTIVE))
-                .thenReturn(Optional.empty());
-
-        when(productRepository.findBySellerAndIdAndStatus(user, product.getId(), Status.SOLD))
+        when(productRepository.findByIdAndStatusIn(product.getId(), List.of(Status.ACTIVE, Status.SOLD)))
                 .thenReturn(Optional.empty());
 
         assertThrows(
@@ -105,11 +103,11 @@ public class GetProductTests extends BaseTestProduct {
     }
 
     @Test
-    void shouldReturnActiveProduct() {
+    void shouldReturnProduct() {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findByIdAndStatus(product.getId(), Status.ACTIVE))
+        when(productRepository.findByIdAndStatusIn(product.getId(), List.of(Status.ACTIVE, Status.SOLD)))
                 .thenReturn(Optional.of(product));
 
         when(likeRepository.countByProductId(product.getId()))
@@ -120,40 +118,6 @@ public class GetProductTests extends BaseTestProduct {
 
         ProductResponse result = productService.getProduct(product.getId(), authentication);
 
-        assertProductResponse(result, 2L, List.of(image));
-
-        verify(productRepository, never()).findBySellerAndIdAndStatus(user, product.getId(), Status.SOLD);
-        verify(likeRepository).countByProductId(product.getId());
-        verify(imageRepository).findAllByProductIdOrderByPositionAsc(product.getId());
-    }
-
-    @Test
-    void shouldReturnSoldProductOwnedByCurrentUser() {
-        product.setStatus(Status.SOLD);
-
-        when(currentUserProvider.get(authentication))
-                .thenReturn(user);
-
-        when(productRepository.findByIdAndStatus(product.getId(), Status.ACTIVE))
-                .thenReturn(Optional.empty());
-
-        when(productRepository.findBySellerAndIdAndStatus(user, product.getId(), Status.SOLD))
-                .thenReturn(Optional.of(product));
-
-        when(likeRepository.countByProductId(product.getId()))
-                .thenReturn(4L);
-
-        when(imageRepository.findAllByProductIdOrderByPositionAsc(product.getId()))
-                .thenReturn(List.of(image));
-
-        ProductResponse result = productService.getProduct(product.getId(), authentication);
-
-        assertProductResponse(result, 4L, List.of(image));
-
-        verify(productRepository).findBySellerAndIdAndStatus(user, product.getId(), Status.SOLD);
-    }
-
-    private void assertProductResponse(ProductResponse result, long expectedLikeCount, List<Image> expectedImages) {
         assertEquals(product.getId(), result.getId());
         assertEquals(product.getSeller().getId(), result.getSellerId());
         assertEquals(product.getSeller().getFirstName(), result.getSellerUsername());
@@ -169,15 +133,18 @@ public class GetProductTests extends BaseTestProduct {
         assertEquals(product.getSize(), result.getSize());
         assertEquals(product.getShippingSize(), result.getShippingSize());
         assertEquals(product.getViewCount(), result.getViewCount());
-        assertEquals(expectedLikeCount, result.getLikeCount());
+        assertEquals(2L, result.getLikeCount());
         assertEquals(product.getStatus(), result.getStatus());
         assertEquals(product.getCreatedAt(), result.getCreatedAt());
         assertEquals(product.getUpdatedAt(), result.getUpdatedAt());
         assertEquals(product.getDeletedAt(), result.getDeletedAt());
         assertEquals(product.getSoldAt(), result.getSoldAt());
         assertEquals(
-                expectedImages.stream().map(Image::getUrl).toList(),
+                Stream.of(image).map(Image::getUrl).toList(),
                 result.getImages().stream().map(ImageResponse::getUrl).toList()
         );
+
+        verify(likeRepository).countByProductId(product.getId());
+        verify(imageRepository).findAllByProductIdOrderByPositionAsc(product.getId());
     }
 }
