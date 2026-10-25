@@ -10,13 +10,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query(
@@ -114,7 +113,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
           AND LOWER(p.title) LIKE LOWER(CONCAT('%', :search, '%'))
         """
     )
-    Page<ProductSummaryProjection> findProducts(
+    Page<ProductSummaryProjection> getProducts(
             @Param("categoryId") Long categoryId,
             @Param("size") Size size,
             @Param("brandId") Long brandId,
@@ -157,13 +156,60 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
            AND (:status IS NULL OR p.status = :status)
            """
     )
-    Page<MyProductSummaryProjection> findBySellerAndStatus(@Param("currentUser") User currentUser, @Param("status") Status status, Pageable pageable);
+    Page<MyProductSummaryProjection> getMyProducts(@Param("currentUser") User currentUser, @Param("status") Status status, Pageable pageable);
+
+    @Query (
+            value = """
+           SELECT
+            p.id AS id,
+            p.title AS title,
+            i.url AS imageUrl,
+            p.price AS price,
+            p.size As size,
+            p.condition AS condition,
+            p.brand.name AS brandName,
+            COUNT(DISTINCT l.id) AS likeCount
+           FROM Product p
+           LEFT JOIN Like l ON p = l.product
+           LEFT JOIN Image i ON p = i.product
+           WHERE p.seller.id = :sellerId
+           AND p.status = 'ACTIVE'
+           AND i.position = (
+              SELECT MIN(i2.position)
+              FROM Image i2
+              WHERE i2.product = p)
+           GROUP BY 
+               p.id,
+               p.title,
+               i.url,
+               p.price,
+               p.size,
+               p.condition,
+               p.brand.name,
+               p.createdAt,
+               p.viewCount
+            ORDER BY
+            CASE WHEN :sortBy = 'PRICE_ASC'
+                 THEN p.price END ASC,
+            CASE WHEN :sortBy = 'PRICE_DESC'
+                 THEN p.price END DESC,
+            CASE WHEN :sortBy = 'NEWEST'
+                 THEN p.createdAt END DESC,
+            CASE WHEN :sortBy = 'RELEVANCE'
+                 THEN COUNT(DISTINCT l.id) * 3 + p.viewCount END DESC,
+                 p.id DESC      
+            """, countQuery = """
+            SELECT COUNT(p)
+             FROM Product p
+             WHERE p.seller.id = :sellerId
+             AND p.status = 'ACTIVE'
+           """)
+    Page<ProductSummaryProjection> getBySellerId(@Param("sellerId") Long sellerId, @Param("sortBy") String sortBy, Pageable pageable);
 
     Optional<Product> findByIdAndStatus(Long id, Status status);
 
     Optional<Product> findBySellerAndIdAndStatus(User currentUser, Long id, Status status);
 
-    Optional<Product> findByIdAndStatusIn(Long id, Collection<Status> statuses);
-
     Optional<Product> findBySellerAndIdAndStatusIn(User currentUser, Long id, Collection<Status> statuses);
+
 }

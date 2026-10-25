@@ -83,7 +83,7 @@ public class GetProductsTests extends BaseTestProduct {
                         null, null, null, null, null, null, authentication, Pageable.unpaged())
         );
 
-        verify(productRepository, never()).findProducts(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any());
+        verify(productRepository, never()).getProducts(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -104,7 +104,7 @@ public class GetProductsTests extends BaseTestProduct {
 
         Page<ProductSummaryProjection> page = new PageImpl<>(List.of(projection));
 
-        when(productRepository.findProducts(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
+        when(productRepository.getProducts(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(page);
 
         Page<ProductSummaryResponse> result = productService.getProducts(null, null, null, null,
@@ -121,6 +121,6 @@ public class GetProductsTests extends BaseTestProduct {
         assertEquals(projection.getBrandName(), first.getBrandName());
         assertEquals(projection.getLikeCount(), first.getLikeCount());
 
-        verify(productRepository).findProducts(any(), any(), any(), any(), any(), any(), any(), any(), eq(ProductSortBy.RELEVANCE.name()), any(), any());
+        verify(productRepository).getProducts(any(), any(), any(), any(), any(), any(), any(), any(), eq(ProductSortBy.RELEVANCE.name()), any(), any());
     }
 }

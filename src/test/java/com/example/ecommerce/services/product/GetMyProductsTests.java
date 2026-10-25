@@ -113,7 +113,7 @@ public class GetMyProductsTests extends BaseTestProduct {
 
         Page<MyProductSummaryProjection> page = new PageImpl<>(List.of(projection));
 
-        when(productRepository.findBySellerAndStatus(user, Status.ACTIVE, Pageable.unpaged()))
+        when(productRepository.getMyProducts(user, Status.ACTIVE, Pageable.unpaged()))
                 .thenReturn(page);
 
         Page<MyProductSummaryResponse> result =
@@ -127,6 +127,6 @@ public class GetMyProductsTests extends BaseTestProduct {
         assertEquals(projection.getLikeCount(), first.getLikeCount());
         assertEquals(projection.getViewCount(), first.getViewCount());
 
-        verify(productRepository).findBySellerAndStatus(user, Status.ACTIVE, Pageable.unpaged());
+        verify(productRepository).getMyProducts(user, Status.ACTIVE, Pageable.unpaged());
     }
 }

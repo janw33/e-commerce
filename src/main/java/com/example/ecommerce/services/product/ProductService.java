@@ -136,7 +136,7 @@ public class ProductService {
 
         currentUserProvider.get(authentication);
 
-        return productRepository.findProducts(categoryId, size, brandId, condition, colors, minPrice, maxPrice, materials, sortBy.name(), search, pageable)
+        return productRepository.getProducts(categoryId, size, brandId, condition, colors, minPrice, maxPrice, materials, sortBy.name(), search, pageable)
                 .map(productMapper::toSummaryResponse);
     }
 
@@ -160,8 +160,15 @@ public class ProductService {
         if (status == Status.DELETED) {
             throw new InvalidStatusException(); }
 
-        return productRepository.findBySellerAndStatus(currentUser, status, pageable)
+        return productRepository.getMyProducts(currentUser, status, pageable)
                 .map(productMapper::toMySummaryResponse);
+    }
+
+    public Page<ProductSummaryResponse> getSellerProducts(Authentication authentication, Long sellerId,ProductSortBy sortBy, Pageable pageable) {
+        User currentUser = currentUserProvider.get(authentication);
+
+        return productRepository.getBySellerId(sellerId, sortBy.name(), pageable)
+                .map(productMapper::toSummaryResponse);
     }
 
     @Transactional

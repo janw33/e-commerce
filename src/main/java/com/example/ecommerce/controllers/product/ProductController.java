@@ -71,9 +71,19 @@ public class ProductController {
     public Page<MyProductSummaryResponse> getMyProducts(
             Authentication authentication,
             @RequestParam (defaultValue = "ACTIVE", required = false) Status status,
-            @PageableDefault(size = 30) Pageable pageable
+            @PageableDefault(size = 100) Pageable pageable
     ) {
         return productService.getMyProducts(authentication, status, pageable);
+    }
+
+    @GetMapping(path = "/seller")
+    public Page<ProductSummaryResponse> getSellerProducts(
+            Authentication authentication,
+            @RequestParam() Long sellerId,
+            @RequestParam (defaultValue = "NEWEST", required = false) ProductSortBy sortBy,
+            @PageableDefault(size = 100) Pageable pageable
+    ) {
+        return productService.getSellerProducts(authentication, sellerId, sortBy, pageable);
     }
 
     @DeleteMapping(path = "/{id}")
