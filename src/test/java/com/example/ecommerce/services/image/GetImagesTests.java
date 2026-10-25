@@ -70,10 +70,7 @@ public class GetImagesTests extends BaseTestProduct {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findByIdAndStatus(product.getId(), Status.ACTIVE))
-                .thenReturn(Optional.empty());
-
-        when(productRepository.findBySellerAndIdAndStatus(user, product.getId(), Status.SOLD))
+        when(productRepository.findByIdAndStatusIn(product.getId(), List.of(Status.ACTIVE, Status.SOLD)))
                 .thenReturn(Optional.empty());
 
         assertThrows(
@@ -85,37 +82,11 @@ public class GetImagesTests extends BaseTestProduct {
     }
 
     @Test
-    void shouldReturnImagesForActiveProduct() {
+    void shouldReturnImages() {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
-        when(productRepository.findByIdAndStatus(product.getId(), Status.ACTIVE))
-                .thenReturn(Optional.of(product));
-
-        when(imageRepository.findAllByProductIdOrderByPositionAsc(product.getId()))
-                .thenReturn(List.of(image));
-
-        List<ImageResponse> result = imageService.getImages(authentication, product.getId());
-
-        assertEquals(1, result.size());
-        assertEquals(image.getId(), result.getFirst().getId());
-        assertEquals(image.getUrl(), result.getFirst().getUrl());
-
-        verify(productRepository, never()).findBySellerAndIdAndStatus(any(), any(), any());
-        verify(imageRepository).findAllByProductIdOrderByPositionAsc(product.getId());
-    }
-
-    @Test
-    void shouldReturnImagesForSoldProduct() {
-        product.setStatus(Status.SOLD);
-
-        when(currentUserProvider.get(authentication))
-                .thenReturn(user);
-
-        when(productRepository.findByIdAndStatus(product.getId(), Status.ACTIVE))
-                .thenReturn(Optional.empty());
-
-        when(productRepository.findBySellerAndIdAndStatus(user, product.getId(), Status.SOLD))
+        when(productRepository.findByIdAndStatusIn(product.getId(), List.of(Status.ACTIVE, Status.SOLD)))
                 .thenReturn(Optional.of(product));
 
         when(imageRepository.findAllByProductIdOrderByPositionAsc(product.getId()))

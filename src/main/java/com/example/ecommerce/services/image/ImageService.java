@@ -32,11 +32,10 @@ public class ImageService {
     }
 
     public List<ImageResponse> getImages(Authentication authentication, Long productId) {
-        User currentUser = currentUserProvider.get(authentication);
+        currentUserProvider.get(authentication);
 
-        Product product = productRepository.findByIdAndStatus(productId, Status.ACTIVE)
-                .orElseGet(() -> productRepository.findBySellerAndIdAndStatus(currentUser, productId, Status.SOLD)
-                        .orElseThrow(ProductNotFoundException::new));
+        Product product = productRepository.findByIdAndStatusIn(productId, List.of(Status.ACTIVE, Status.SOLD))
+                        .orElseThrow(ProductNotFoundException::new);
 
         return imageRepository.findAllByProductIdOrderByPositionAsc(product.getId())
                 .stream()
