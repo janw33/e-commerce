@@ -2,7 +2,6 @@ package com.example.ecommerce.controllers.category;
 
 import com.example.ecommerce.BaseTest.category.BaseTestCategory;
 import com.example.ecommerce.entitites.product.enums.Condition;
-import com.example.ecommerce.exceptions.user.UserInactiveException;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.services.category.CategoryService;
 import org.junit.jupiter.api.Test;

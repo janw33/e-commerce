@@ -1,7 +1,6 @@
 package com.example.ecommerce.services.user;
 
 import com.example.ecommerce.entitites.user.User;
-import com.example.ecommerce.exceptions.user.UserInactiveException;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
@@ -32,7 +31,7 @@ public class UserProvisioningService {
                 .orElseGet(() -> createOrGetUser(authentication, externalId));
 
         if (!user.isActive()) {
-            throw new UserInactiveException();
+            throw new UserNotFoundException();
         }
 
         return user;

@@ -3,8 +3,7 @@ package com.example.ecommerce.services.product;
 import com.example.ecommerce.BaseTest.product.BaseTestProduct;
 import com.example.ecommerce.dtos.product.ProductResponse;
 import com.example.ecommerce.dtos.product.UpdateProductRequest;
-import com.example.ecommerce.entitites.product.enums.SizeType;
-import com.example.ecommerce.entitites.product.enums.Status;
+import com.example.ecommerce.entitites.product.enums.*;
 import com.example.ecommerce.entitites.product.productEntities.Image;
 import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
@@ -173,6 +172,14 @@ public class UpdateProductTests extends BaseTestProduct {
 
     @Test
     void shouldUpdateProduct() {
+        updateProductRequest.setTitle("New Title");
+        updateProductRequest.setDescription("new description");
+        updateProductRequest.setPrice(new BigDecimal("42.50"));
+        updateProductRequest.setColors(Set.of(Color.RED));
+        updateProductRequest.setMaterials(Set.of(Material.WOOL));
+        updateProductRequest.setCondition(Condition.GOOD);
+        updateProductRequest.setShippingSize(ShippingSize.LARGE);
+
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
@@ -191,31 +198,45 @@ public class UpdateProductTests extends BaseTestProduct {
         when(imageRepository.saveAll(any()))
                 .thenReturn(List.of(image));
 
-        ProductResponse result = productService.updateProduct(
-                updateProductRequest, authentication, product.getId());
+        ProductResponse result = productService.updateProduct(updateProductRequest, authentication, product.getId());
+
+        assertEquals(updateProductRequest.getTitle(), product.getTitle());
+        assertEquals(updateProductRequest.getDescription(), product.getDescription());
+        assertEquals(updateProductRequest.getPrice(), product.getPrice());
+        assertEquals(updateProductRequest.getColors(), product.getColors());
+        assertEquals(updateProductRequest.getMaterials(), product.getMaterials());
+        assertEquals(updateProductRequest.getCondition(), product.getCondition());
+        assertEquals(updateProductRequest.getShippingSize(), product.getShippingSize());
+        assertEquals(updateProductRequest.getSize(), product.getSize());
+        assertEquals(updateProductRequest.getCategoryId(), product.getCategory().getId());
+        assertEquals(updateProductRequest.getBrandId(), product.getBrand().getId());
+
+        assertEquals(updateProductRequest.getTitle(), result.getTitle());
+        assertEquals(updateProductRequest.getDescription(), result.getDescription());
+        assertEquals(updateProductRequest.getPrice(), result.getPrice());
+        assertEquals(updateProductRequest.getColors(), result.getColors());
+        assertEquals(updateProductRequest.getMaterials(), result.getMaterials());
+        assertEquals(updateProductRequest.getCondition(), result.getCondition());
+        assertEquals(updateProductRequest.getShippingSize(), result.getShippingSize());
+        assertEquals(updateProductRequest.getSize(), result.getSize());
+        assertEquals(updateProductRequest.getCategoryId(), result.getCategoryId());
+        assertEquals(updateProductRequest.getBrandId(), result.getBrandId());
+        assertEquals(brand.getName(), result.getBrandName());
 
         assertEquals(product.getId(), result.getId());
-        assertEquals(product.getSeller().getId(), result.getSellerId());
-        assertEquals(product.getSeller().getFirstName(), result.getSellerUsername());
-        assertEquals(product.getCategory().getId(), result.getCategoryId());
-        assertEquals(product.getBrand().getId(), result.getBrandId());
-        assertEquals(product.getBrand().getName(), result.getBrandName());
-        assertEquals(product.getTitle(), result.getTitle());
-        assertEquals(product.getDescription(), result.getDescription());
-        assertEquals(product.getPrice(), result.getPrice());
-        assertEquals(product.getColors(), result.getColors());
-        assertEquals(product.getCondition(), result.getCondition());
-        assertEquals(product.getMaterials(), result.getMaterials());
-        assertEquals(product.getSize(), result.getSize());
-        assertEquals(product.getShippingSize(), result.getShippingSize());
+        assertEquals(user.getId(), result.getSellerId());
+        assertEquals(user.getFirstName(), result.getSellerUsername());
         assertEquals(product.getViewCount(), result.getViewCount());
         assertEquals(3L, result.getLikeCount());
-        assertEquals(product.getStatus(), result.getStatus());
+        assertEquals(Status.ACTIVE, result.getStatus());
         assertEquals(product.getCreatedAt(), result.getCreatedAt());
         assertEquals(product.getUpdatedAt(), result.getUpdatedAt());
         assertEquals(product.getDeletedAt(), result.getDeletedAt());
         assertEquals(product.getSoldAt(), result.getSoldAt());
+
+        assertNotNull(result.getImages());
         assertEquals(1, result.getImages().size());
+        assertEquals(image.getId(), result.getImages().getFirst().getId());
         assertEquals(image.getUrl(), result.getImages().getFirst().getUrl());
 
         InOrder inOrder = inOrder(imageRepository);

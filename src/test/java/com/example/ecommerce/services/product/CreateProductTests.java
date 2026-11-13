@@ -2,7 +2,9 @@ package com.example.ecommerce.services.product;
 
 import com.example.ecommerce.BaseTest.product.BaseTestProduct;
 import com.example.ecommerce.dtos.product.ProductResponse;
+import com.example.ecommerce.entitites.product.Product;
 import com.example.ecommerce.entitites.product.enums.SizeType;
+import com.example.ecommerce.entitites.product.enums.Status;
 import com.example.ecommerce.entitites.product.productEntities.Image;
 import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
@@ -190,6 +192,30 @@ public class CreateProductTests extends BaseTestProduct {
 
         assertEquals(image.getUrl(), result.getImages().getFirst().getUrl());
 
+        ArgumentCaptor<Product> productCaptor = ArgumentCaptor.forClass(Product.class);
+
+        verify(productRepository).save(productCaptor.capture());
+
+        Product savedProduct = productCaptor.getValue();
+
+        assertSame(user, savedProduct.getSeller());
+        assertSame(category, savedProduct.getCategory());
+        assertSame(brand, savedProduct.getBrand());
+
+        assertEquals(createProductRequest.getTitle(), savedProduct.getTitle());
+        assertEquals(createProductRequest.getDescription(), savedProduct.getDescription());
+        assertEquals(createProductRequest.getPrice(), savedProduct.getPrice());
+        assertEquals(createProductRequest.getColors(), savedProduct.getColors());
+        assertEquals(createProductRequest.getCondition(), savedProduct.getCondition());
+        assertEquals(createProductRequest.getMaterials(), savedProduct.getMaterials());
+        assertEquals(createProductRequest.getSize(), savedProduct.getSize());
+        assertEquals(createProductRequest.getShippingSize(), savedProduct.getShippingSize());
+
+        assertEquals(Status.ACTIVE, savedProduct.getStatus());
+        assertEquals(0L, savedProduct.getViewCount());
+        assertNull(savedProduct.getDeletedAt());
+        assertNull(savedProduct.getSoldAt());
+
         ArgumentCaptor<List<Image>> captor = ArgumentCaptor.forClass(List.class);
 
         verify(imageRepository).saveAll(captor.capture());
@@ -198,8 +224,10 @@ public class CreateProductTests extends BaseTestProduct {
 
         assertEquals(1, savedImages.size());
         assertEquals(0, savedImages.getFirst().getPosition());
-
-        verify(productRepository).save(any());
-        verify(imageRepository).saveAll(any());
+        assertSame(product, savedImages.getFirst().getProduct());
+        assertEquals(
+                createProductRequest.getImages().getFirst().getUrl(),
+                savedImages.getFirst().getUrl()
+        );
     }
 }

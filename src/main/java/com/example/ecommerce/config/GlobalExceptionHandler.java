@@ -4,10 +4,10 @@ import com.example.ecommerce.dtos.error.ErrorResponse;
 import com.example.ecommerce.exceptions.image.ImageNotFoundException;
 import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
+import com.example.ecommerce.exceptions.like.LikeAlreadyExistsException;
 import com.example.ecommerce.exceptions.product.InvalidSizeTypeException;
 import com.example.ecommerce.exceptions.product.InvalidStatusException;
 import com.example.ecommerce.exceptions.product.ProductNotFoundException;
-import com.example.ecommerce.exceptions.user.UserInactiveException;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.exceptions.validation.ValidationErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -66,22 +66,6 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-    }
-
-    @ExceptionHandler(UserInactiveException.class)
-    public ResponseEntity<ErrorResponse> handeUserInactiveException(
-            UserInactiveException exception,
-            HttpServletRequest request
-    ) {
-        ErrorResponse error = ErrorResponse.builder()
-                .status(HttpStatus.FORBIDDEN.value())
-                .error("USER_INACTIVE")
-                .message(exception.getMessage())
-                .path(request.getRequestURI())
-                .timestamp(LocalDateTime.now())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
     @ExceptionHandler(CategoryNotFoundException.class)
@@ -195,4 +179,21 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
+
+    @ExceptionHandler(LikeAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleLikeAlreadyExistsException(
+            LikeAlreadyExistsException exception,
+            HttpServletRequest request
+    ) {
+        ErrorResponse error = ErrorResponse.builder()
+                .status(HttpStatus.CONFLICT.value())
+                .error("LIKE_ALREADY_EXISTS")
+                .message(exception.getMessage())
+                .path(request.getRequestURI())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
 }

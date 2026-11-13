@@ -81,7 +81,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             CASE WHEN :sortBy = 'NEWEST'
                  THEN p.createdAt END DESC,
             CASE WHEN :sortBy = 'RELEVANCE'
-                 THEN COUNT(DISTINCT l.id) * 3 + p.viewCount END DESC
+                 THEN COUNT(DISTINCT l.id) * 3 + p.viewCount END DESC,
+                 p.id DESC  
         """, countQuery = """
         SELECT COUNT(p)
         FROM Product p
@@ -148,7 +149,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                i.url,
                p.viewCount,
                p.createdAt
-           ORDER BY p.createdAt DESC
+           ORDER BY p.createdAt DESC,
+           p.id DESC  
            """, countQuery = """
             SELECT COUNT(p)
             FROM Product p

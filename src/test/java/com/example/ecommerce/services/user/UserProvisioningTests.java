@@ -2,7 +2,7 @@ package com.example.ecommerce.services.user;
 
 import com.example.ecommerce.BaseTest.user.BaseTestUser;
 import com.example.ecommerce.entitites.user.User;
-import com.example.ecommerce.exceptions.user.UserInactiveException;
+import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.repository.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +42,7 @@ public class UserProvisioningTests extends BaseTestUser {
                 .thenReturn(Optional.of(user));
 
         assertThrows(
-                UserInactiveException.class,
+                UserNotFoundException.class,
                 () -> userProvisioningService.getOrCreate(authentication)
         );
 
