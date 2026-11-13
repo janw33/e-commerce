@@ -90,7 +90,7 @@ public class LikeProductTests extends BaseTestProduct {
     }
 
     @Test
-    void shouldLikeProduct() {
+    void shouldLikeActiveProduct() {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
