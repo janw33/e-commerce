@@ -204,7 +204,7 @@ public class GlobalExceptionHandler {
     ) {
         ErrorResponse error = ErrorResponse.builder()
                 .status(HttpStatus.NOT_FOUND.value())
-                .error("LIKE_NOT_FOUNT")
+                .error("LIKE_NOT_FOUND")
                 .message(exception.getMessage())
                 .path(request.getRequestURI())
                 .timestamp(LocalDateTime.now())

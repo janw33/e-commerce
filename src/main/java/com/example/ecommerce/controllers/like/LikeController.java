@@ -23,6 +23,7 @@ public class LikeController {
         return ResponseEntity.noContent().build();
     }
 
+
     @DeleteMapping(path = "/{productId}")
     public ResponseEntity<Void> unlikeProduct (
             @PathVariable Long productId,
