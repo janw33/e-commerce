@@ -86,6 +86,15 @@ public class ProductController {
         return productService.getSellerProducts(authentication, sellerId, sortBy, pageable);
     }
 
+    @GetMapping(path = "/liked")
+    public Page<ProductSummaryResponse> getLikedProducts(
+            Authentication authentication,
+            @PageableDefault(size = 100) Pageable pageable
+    ) {
+        return productService.getLikedProducts(authentication, pageable);
+    }
+
+
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<Void> deleteProduct(
             @PathVariable Long id,

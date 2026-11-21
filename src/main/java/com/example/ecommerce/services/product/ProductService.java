@@ -182,4 +182,8 @@ public class ProductService {
         product.setStatus(Status.DELETED);
         product.setDeletedAt(LocalDateTime.now());
     }
+
+    public Page<ProductSummaryResponse> getLikedProducts(Authentication authentication, Pageable pageable) {
+        return null;
+    }
 }
