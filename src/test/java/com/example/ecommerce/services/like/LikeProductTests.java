@@ -38,7 +38,9 @@ public class LikeProductTests extends BaseTestProduct {
 
     @BeforeEach
     void setUp() {
-        likeService = new LikeService(likeRepository, productRepository, currentUserProvider);
+        likeService = new LikeService(likeRepository,
+                productRepository,
+                currentUserProvider);
     }
 
     @Test
