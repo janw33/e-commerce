@@ -94,7 +94,6 @@ public class ProductController {
         return productService.getLikedProducts(authentication, pageable);
     }
 
-
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<Void> deleteProduct(
             @PathVariable Long id,

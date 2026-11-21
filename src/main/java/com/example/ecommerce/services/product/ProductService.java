@@ -170,6 +170,13 @@ public class ProductService {
                 .map(productMapper::toSummaryResponse);
     }
 
+    public Page<ProductSummaryResponse> getLikedProducts(Authentication authentication, Pageable pageable) {
+        User currentUser = currentUserProvider.get(authentication);
+
+        return likeRepository.findAllLikedProductsByUserId(currentUser.getId(), pageable)
+                .map(productMapper::toSummaryResponse);
+    }
+
     @Transactional
     public void deleteProduct(Long id, Authentication authentication) {
         User currentUser = currentUserProvider.get(authentication);
@@ -183,7 +190,4 @@ public class ProductService {
         product.setDeletedAt(LocalDateTime.now());
     }
 
-    public Page<ProductSummaryResponse> getLikedProducts(Authentication authentication, Pageable pageable) {
-        return null;
-    }
 }

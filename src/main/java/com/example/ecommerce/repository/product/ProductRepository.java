@@ -173,13 +173,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             COUNT(DISTINCT l.id) AS likeCount
            FROM Product p
            LEFT JOIN Like l ON p = l.product
-           LEFT JOIN Image i ON p = i.product
+           LEFT JOIN Image i ON i.product = p AND i.position = (
+            SELECT MIN(i2.position) FROM Image i2 WHERE i2.product = p
+            )
            WHERE p.seller.id = :sellerId
            AND p.status = 'ACTIVE'
-           AND i.position = (
-              SELECT MIN(i2.position)
-              FROM Image i2
-              WHERE i2.product = p)
            GROUP BY 
                p.id,
                p.title,
