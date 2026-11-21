@@ -44,7 +44,7 @@ public class ProductController {
     @GetMapping
     public Page<ProductSummaryResponse> getProducts(
             @RequestParam (required = false) Long categoryId,
-            @RequestParam (required = false) Size size,
+            @RequestParam(name = "productSize", required = false) Size size,
             @RequestParam (required = false) Long brandId,
             @RequestParam (required = false) Condition condition,
             @RequestParam (required = false) Set<Color> colors,
