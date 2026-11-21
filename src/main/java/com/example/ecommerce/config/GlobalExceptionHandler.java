@@ -5,6 +5,7 @@ import com.example.ecommerce.exceptions.image.ImageNotFoundException;
 import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
 import com.example.ecommerce.exceptions.like.LikeAlreadyExistsException;
+import com.example.ecommerce.exceptions.like.LikeNotFoundException;
 import com.example.ecommerce.exceptions.product.InvalidSizeTypeException;
 import com.example.ecommerce.exceptions.product.InvalidStatusException;
 import com.example.ecommerce.exceptions.product.ProductNotFoundException;
@@ -194,6 +195,22 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(LikeNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleLikeNotFoundException(
+            LikeNotFoundException exception,
+            HttpServletRequest request
+    ) {
+        ErrorResponse error = ErrorResponse.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .error("LIKE_NOT_FOUNT")
+                .message(exception.getMessage())
+                .path(request.getRequestURI())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
 }

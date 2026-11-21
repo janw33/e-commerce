@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Long> {
@@ -27,4 +28,11 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
             @Param("userId") Long userId,
             @Param("productId") Long productId
     );
+
+    @Modifying
+    @Query("""
+        delete from Like l
+        where l.user.id = :userId and l.product.id = :productId
+        """)
+    int deleteLike(@Param("userId") Long userId, @Param("productId") Long productId);
 }
