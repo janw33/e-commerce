@@ -1,5 +1,7 @@
 package com.example.ecommerce.services.image;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -11,7 +13,14 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.UUID;
 
+@Component
 public class ImageUploadValidator {
+    private final Path directory;
+
+    public ImageUploadValidator(@Value("${app.images.upload-dir}") String uploadDir) {
+        this.directory = Path.of(uploadDir);
+    }
+
     private static final long MAX_FILE_BYTES = 5L * 1024 * 1024;
     private static final long MAX_PIXELS = 12_000_000;
 
@@ -61,7 +70,7 @@ public class ImageUploadValidator {
         return fileName;
     }
 
-    public String store(MultipartFile file, Path directory) throws IOException {
+    public String store(MultipartFile file) throws IOException {
         BufferedImage image = readValidatedImage(file);
         return savePng(image, directory);
     }
