@@ -8,11 +8,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -24,12 +28,14 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductResponse> createProduct(
-            @RequestBody @Valid CreateProductRequest request,
+            @Valid @RequestPart("product") CreateProductRequest request,
+            @RequestPart("images") List<MultipartFile> images,
             Authentication authentication
-    ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(request, authentication));
+    ) throws IOException {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(productService.createProduct(request, images, authentication));
     }
 
     @PutMapping(path = "/{id}")

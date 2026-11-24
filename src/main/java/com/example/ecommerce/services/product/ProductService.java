@@ -9,6 +9,7 @@ import com.example.ecommerce.entitites.product.productEntities.Image;
 import com.example.ecommerce.entitites.user.User;
 import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
+import com.example.ecommerce.exceptions.image.InvalidImageCountException;
 import com.example.ecommerce.exceptions.product.InvalidSizeTypeException;
 import com.example.ecommerce.exceptions.product.InvalidStatusException;
 import com.example.ecommerce.exceptions.product.ProductNotFoundException;
@@ -20,14 +21,18 @@ import com.example.ecommerce.repository.category.CategoryRepository;
 import com.example.ecommerce.repository.image.ImageRepository;
 import com.example.ecommerce.repository.like.LikeRepository;
 import com.example.ecommerce.repository.product.ProductRepository;
+import com.example.ecommerce.services.image.ImageUploadValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -42,10 +47,13 @@ public class ProductService {
     private final LikeRepository likeRepository;
     private final ProductMapper productMapper;
     private final ImageMapper imageMapper;
+    private final ImageUploadValidator imageUploadValidator;
+
+    private static final int MAX_IMAGES_PER_PRODUCT = 20;
 
     public ProductService(CurrentUserProvider currentUserProvider, ProductRepository productRepository, ImageRepository imageRepository,
                           CategoryRepository categoryRepository, BrandRepository brandRepository, LikeRepository likeRepository,
-                          ProductMapper productMapper, ImageMapper imageMapper) {
+                          ProductMapper productMapper, ImageMapper imageMapper, ImageUploadValidator imageUploadValidator) {
         this.currentUserProvider = currentUserProvider;
         this.productRepository = productRepository;
         this.imageRepository = imageRepository;
@@ -54,11 +62,16 @@ public class ProductService {
         this.likeRepository = likeRepository;
         this.productMapper = productMapper;
         this.imageMapper = imageMapper;
+        this.imageUploadValidator = imageUploadValidator;
     }
 
-    @Transactional
-    public ProductResponse createProduct(CreateProductRequest request, Authentication authentication) {
+    @Transactional(rollbackOn = IOException.class)
+    public ProductResponse createProduct(CreateProductRequest request, List<MultipartFile> images, Authentication authentication) throws IOException {
         User currentUser = currentUserProvider.get(authentication);
+
+        if (images.isEmpty() || images.size() > MAX_IMAGES_PER_PRODUCT) {
+            throw new InvalidImageCountException();
+        }
 
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(CategoryNotFoundException::new);
@@ -74,13 +87,28 @@ public class ProductService {
 
         Product savedProduct = productRepository.save(newProduct);
 
-        List<Image> images = imageRepository.saveAll(
-                IntStream.range(0, request.getImages().size())
-                        .mapToObj(i -> imageMapper.toEntity(
-                                request.getImages().get(i), savedProduct, i))
-                        .toList());
+        List<Image> imageRecords = new ArrayList<>();
 
-        return productMapper.toResponse(savedProduct, 0, images.stream().map(imageMapper::toResponse).toList());
+        List<String> storedFileNames = new ArrayList<>();
+        imageUploadValidator.deleteFilesOnRollback(storedFileNames);
+
+        for (int i = 0; i < images.size(); i++) {
+            MultipartFile file = images.get(i);
+            String fileName = imageUploadValidator.store(file);
+            storedFileNames.add(fileName);
+
+            Image image = Image.builder()
+                    .product(savedProduct)
+                    .url("/api/v1/image/files/" + fileName)
+                    .position(i)
+                    .build();
+
+            imageRecords.add(image);
+        }
+
+        List<Image> savedImages = imageRepository.saveAll(imageRecords);
+
+        return productMapper.toResponse(savedProduct, 0, savedImages.stream().map(imageMapper::toResponse).toList());
     }
 
     @Transactional

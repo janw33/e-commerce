@@ -4,6 +4,7 @@ import com.example.ecommerce.dtos.error.ErrorResponse;
 import com.example.ecommerce.exceptions.image.ImageNotFoundException;
 import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
+import com.example.ecommerce.exceptions.image.InvalidImageCountException;
 import com.example.ecommerce.exceptions.like.LikeAlreadyExistsException;
 import com.example.ecommerce.exceptions.like.LikeNotFoundException;
 import com.example.ecommerce.exceptions.product.InvalidSizeTypeException;
@@ -211,6 +212,22 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(InvalidImageCountException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidImageCountException(
+            InvalidImageCountException exception,
+            HttpServletRequest request
+    ) {
+        ErrorResponse error = ErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("INVALID_IMAGE_COUNT")
+                .message(exception.getMessage())
+                .path(request.getRequestURI())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
 }

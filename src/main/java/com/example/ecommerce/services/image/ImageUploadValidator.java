@@ -1,7 +1,10 @@
 package com.example.ecommerce.services.image;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -11,9 +14,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.transaction.support.TransactionSynchronization.STATUS_ROLLED_BACK;
+
 @Component
+@Slf4j
 public class ImageUploadValidator {
     private final Path directory;
 
@@ -60,11 +67,20 @@ public class ImageUploadValidator {
         String fileName = UUID.randomUUID() + ".png";
         Path path = directory.resolve(fileName);
 
-        try (var output = Files.newOutputStream(
-                path, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
+        var output = Files.newOutputStream(
+                path, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+
+        try (output) {
             if (!ImageIO.write(image, "png", output)) {
                 throw new IOException("No PNG writer available");
             }
+        } catch (IOException | RuntimeException failure) {
+            try {
+                Files.deleteIfExists(path);
+            } catch (IOException cleanupFailure) {
+                failure.addSuppressed(cleanupFailure);
+            }
+            throw failure;
         }
 
         return fileName;
@@ -73,5 +89,25 @@ public class ImageUploadValidator {
     public String store(MultipartFile file) throws IOException {
         BufferedImage image = readValidatedImage(file);
         return savePng(image, directory);
+    }
+
+    public void deleteFilesOnRollback(List<String> fileNames) {
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCompletion(int status) {
+                        if (status == STATUS_ROLLED_BACK) {
+                            for (String fileName : fileNames) {
+                                try {
+                                    Files.deleteIfExists(directory.resolve(fileName));
+                                } catch (IOException exception) {
+                                    log.warn("Could not delete image {} after rollback",
+                                            fileName, exception);
+                                }
+                            }
+                        }
+                    }
+                }
+        );
     }
 }
