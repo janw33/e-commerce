@@ -1,0 +1,98 @@
+package com.example.ecommerce.services.image;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class DeleteFilesOnRollbackTests {
+    @TempDir
+    private Path directory;
+
+    private ImageUploadValidator imageUploadValidator;
+
+    @BeforeEach
+    void setUp() {
+        imageUploadValidator = new ImageUploadValidator(directory.toString());
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.clearSynchronization();
+        }
+    }
+
+    @Test
+    void shouldNotStoreInvalidImage() throws IOException {
+        MockMultipartFile file = new MockMultipartFile("image", new byte[]{1, 2, 3});
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> imageUploadValidator.store(file)
+        );
+
+        try (var files = Files.list(directory)) {
+            assertEquals(0, files.count());
+        }
+    }
+
+    @Test
+    void shouldDeleteFilesAddedAfterRegisteringRollbackSynchronization() throws IOException {
+        TransactionSynchronizationManager.initSynchronization();
+        List<String> fileNames = new ArrayList<>();
+        imageUploadValidator.deleteFilesOnRollback(fileNames);
+
+        String firstFileName = imageUploadValidator.store(imageFile("png", 10, 20));
+        String secondFileName = imageUploadValidator.store(imageFile("jpeg", 10, 20));
+
+        fileNames.add(firstFileName);
+        fileNames.add("missing.png");
+        fileNames.add(secondFileName);
+
+        Path unrelatedFile = Files.writeString(directory.resolve("unrelated.png"), "keep");
+
+        var synchronizations = TransactionSynchronizationManager.getSynchronizations();
+        assertEquals(1, synchronizations.size());
+        synchronizations.getFirst().afterCompletion(TransactionSynchronization.STATUS_ROLLED_BACK);
+
+        assertFalse(Files.exists(directory.resolve(firstFileName)));
+        assertFalse(Files.exists(directory.resolve(secondFileName)));
+        assertTrue(Files.exists(unrelatedFile));
+    }
+
+    @Test
+    void shouldKeepFilesAfterCommit() throws IOException {
+        TransactionSynchronizationManager.initSynchronization();
+        String fileName = imageUploadValidator.store(imageFile("png", 10, 20));
+        imageUploadValidator.deleteFilesOnRollback(List.of(fileName));
+
+        TransactionSynchronizationManager.getSynchronizations().getFirst()
+                .afterCompletion(TransactionSynchronization.STATUS_COMMITTED);
+
+        assertTrue(Files.exists(directory.resolve(fileName)));
+    }
+
+    private MockMultipartFile imageFile(String format, int width, int height) throws IOException {
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        try (var output = new ByteArrayOutputStream()) {
+            assertTrue(ImageIO.write(image, format, output));
+            return new MockMultipartFile("image", "image." + format, "image/" + format, output.toByteArray());
+        }
+    }
+}

@@ -61,7 +61,7 @@ public class ImageUploadValidator {
         }
     }
 
-    String savePng(BufferedImage image, Path directory) throws IOException {
+    private String savePng(BufferedImage image, Path directory) throws IOException {
         String fileName = UUID.randomUUID() + ".png";
         Path path = directory.resolve(fileName);
 
