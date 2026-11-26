@@ -17,8 +17,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.UUID;
 
-import static org.springframework.transaction.support.TransactionSynchronization.STATUS_ROLLED_BACK;
-
 @Component
 @Slf4j
 public class ImageUploadValidator {

@@ -13,6 +13,7 @@ import com.example.ecommerce.entitites.product.productEntities.Category;
 import com.example.ecommerce.entitites.product.productEntities.Image;
 import com.example.ecommerce.entitites.user.User;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.web.multipart.MultipartFile;
 
 public abstract class BaseTestProduct {
     protected User user;
@@ -20,6 +21,7 @@ public abstract class BaseTestProduct {
     protected Category category;
     protected Brand brand;
     protected Image image;
+    protected MultipartFile imageFile;
 
     protected CreateProductRequest createProductRequest;
     protected UpdateProductRequest updateProductRequest;
@@ -34,6 +36,7 @@ public abstract class BaseTestProduct {
         brand = TestDataUtil.brand();
         product = TestDataUtil.product();
         image = TestDataUtil.image();
+        imageFile = TestDataUtil.imageFile();
 
         createProductRequest = TestDataUtil.createProductRequest();
         updateProductRequest = TestDataUtil.updateProductRequest();

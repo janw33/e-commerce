@@ -8,6 +8,7 @@ import com.example.ecommerce.entitites.product.enums.Status;
 import com.example.ecommerce.entitites.product.productEntities.Image;
 import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
+import com.example.ecommerce.exceptions.image.InvalidImageCountException;
 import com.example.ecommerce.exceptions.product.InvalidSizeTypeException;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
 import com.example.ecommerce.mappers.image.ImageMapper;
@@ -18,6 +19,7 @@ import com.example.ecommerce.repository.category.CategoryRepository;
 import com.example.ecommerce.repository.image.ImageRepository;
 import com.example.ecommerce.repository.like.LikeRepository;
 import com.example.ecommerce.repository.product.ProductRepository;
+import com.example.ecommerce.services.image.ImageUploadValidator;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +29,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,6 +63,9 @@ public class CreateProductTests extends BaseTestProduct {
     @Mock
     private LikeRepository likeRepository;
 
+    @Mock
+    private ImageUploadValidator imageUploadValidator;
+
     private final ProductMapper productMapper = new ProductMapper();
 
     private final ImageMapper imageMapper = new ImageMapper();
@@ -73,7 +81,8 @@ public class CreateProductTests extends BaseTestProduct {
                 brandRepository,
                 likeRepository,
                 productMapper,
-                imageMapper
+                imageMapper,
+                imageUploadValidator
             );
     }
 
@@ -84,7 +93,37 @@ public class CreateProductTests extends BaseTestProduct {
 
         assertThrows(
                 UserNotFoundException.class,
-                () -> productService.createProduct(createProductRequest, authentication)
+                () -> productService.createProduct(createProductRequest, List.of(imageFile), authentication)
+        );
+
+        verify(productRepository, never()).save(any());
+        verify(imageRepository, never()).saveAll(any());
+    }
+
+    @Test
+    void shouldThrowInvalidImageCountExceptionWhenImagesAreEmpty() {
+        when(currentUserProvider.get(authentication))
+                .thenReturn(user);
+
+        assertThrows(
+                InvalidImageCountException.class,
+                () -> productService.createProduct(createProductRequest, List.of(), authentication)
+        );
+
+        verify(productRepository, never()).save(any());
+        verify(imageRepository, never()).saveAll(any());
+    }
+
+    @Test
+    void shouldThrowInvalidImageCountExceptionWhenImagesSizeIsAbove20() {
+        List<MultipartFile> list = Collections.nCopies(21, imageFile);
+
+        when(currentUserProvider.get(authentication))
+                .thenReturn(user);
+
+        assertThrows(
+                InvalidImageCountException.class,
+                () -> productService.createProduct(createProductRequest, list, authentication)
         );
 
         verify(productRepository, never()).save(any());
@@ -101,7 +140,7 @@ public class CreateProductTests extends BaseTestProduct {
 
         assertThrows(
                 CategoryNotFoundException.class,
-                () -> productService.createProduct(createProductRequest, authentication)
+                () -> productService.createProduct(createProductRequest, List.of(imageFile), authentication)
         );
 
         verify(productRepository, never()).save(any());
@@ -120,7 +159,7 @@ public class CreateProductTests extends BaseTestProduct {
 
         assertThrows(
                 InvalidSizeTypeException.class,
-                () -> productService.createProduct(createProductRequest, authentication)
+                () -> productService.createProduct(createProductRequest, List.of(imageFile), authentication)
         );
 
         verify(productRepository, never()).save(any());
@@ -140,7 +179,7 @@ public class CreateProductTests extends BaseTestProduct {
 
         assertThrows(
                 BrandNotFoundException.class,
-                () -> productService.createProduct(createProductRequest, authentication)
+                () -> productService.createProduct(createProductRequest,List.of(imageFile), authentication)
         );
 
         verify(productRepository, never()).save(any());
@@ -148,7 +187,7 @@ public class CreateProductTests extends BaseTestProduct {
     }
 
     @Test
-    void shouldCreateProduct() {
+    void shouldCreateProduct() throws IOException {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
@@ -164,7 +203,9 @@ public class CreateProductTests extends BaseTestProduct {
         when(imageRepository.saveAll(any()))
                 .thenReturn(List.of(image));
 
-        ProductResponse result = productService.createProduct(createProductRequest, authentication);
+        when(imageUploadValidator.store(imageFile)).thenReturn("stored-image.png");
+
+        ProductResponse result = productService.createProduct(createProductRequest, List.of(imageFile), authentication);
 
         assertEquals(product.getId(), result.getId());
         assertEquals(product.getSeller().getId(), result.getSellerId());
@@ -225,9 +266,6 @@ public class CreateProductTests extends BaseTestProduct {
         assertEquals(1, savedImages.size());
         assertEquals(0, savedImages.getFirst().getPosition());
         assertSame(product, savedImages.getFirst().getProduct());
-        assertEquals(
-                createProductRequest.getImages().getFirst().getUrl(),
-                savedImages.getFirst().getUrl()
-        );
-    }
+        assertEquals("/api/v1/image/files/stored-image.png",
+                savedImages.getFirst().getUrl());}
 }

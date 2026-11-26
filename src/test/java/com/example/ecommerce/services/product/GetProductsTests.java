@@ -13,6 +13,7 @@ import com.example.ecommerce.repository.category.CategoryRepository;
 import com.example.ecommerce.repository.image.ImageRepository;
 import com.example.ecommerce.repository.like.LikeRepository;
 import com.example.ecommerce.repository.product.ProductRepository;
+import com.example.ecommerce.services.image.ImageUploadValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,6 +54,9 @@ public class GetProductsTests extends BaseTestProduct {
     @Mock
     private LikeRepository likeRepository;
 
+    @Mock
+    private ImageUploadValidator imageUploadValidator;
+
     private final ProductMapper productMapper = new ProductMapper();
 
     private final ImageMapper imageMapper = new ImageMapper();
@@ -68,7 +72,8 @@ public class GetProductsTests extends BaseTestProduct {
                 brandRepository,
                 likeRepository,
                 productMapper,
-                imageMapper
+                imageMapper,
+                imageUploadValidator
         );
     }
 

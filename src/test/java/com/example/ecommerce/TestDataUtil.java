@@ -16,6 +16,7 @@ import com.example.ecommerce.entitites.product.productEntities.Brand;
 import com.example.ecommerce.entitites.product.productEntities.Category;
 import com.example.ecommerce.entitites.product.productEntities.Image;
 import com.example.ecommerce.entitites.user.User;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -143,7 +144,6 @@ public final class TestDataUtil {
 
     public static CreateProductRequest createProductRequest() {
         return CreateProductRequest.builder()
-                .images(List.of(createImageRequest()))
                 .title(product().getTitle())
                 .description(product().getDescription())
                 .categoryId(product().getCategory().getId())
@@ -211,5 +211,13 @@ public final class TestDataUtil {
                 .brandName(product().getBrand().getName())
                 .likeCount(0L)
                 .build();
+    }
+
+    public static MockMultipartFile imageFile() {
+        return new MockMultipartFile(
+                "images",
+                "test.jpg",
+                "image/jpeg",
+                new byte[]{1, 2, 3});
     }
 }
