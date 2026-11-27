@@ -14,3 +14,9 @@ Aplikacja zapisuje zdjęcia jako pliki PNG w katalogu ustawionym przez `app.imag
 Nagłe zatrzymanie aplikacji może przerwać sprzątanie przed zapisaniem ostrzeżenia. W takim przypadku albo po nieudanym usunięciu na dysku może zostać plik bez powiązanego rekordu w bazie. Dlatego przy sprawdzaniu spójności porównuj nazwy plików z odpowiadającymi im adresami w `images.url`. Sama liczba plików i rekordów może się różnić.
 
 Plik bez rekordu w bazie nie pojawi się na liście zdjęć ogłoszenia. Po zakończeniu obsługi żądania i potwierdzeniu, że żaden rekord nie wskazuje na ten plik, można go usunąć ręcznie. To przyjęte ograniczenie lokalnego środowiska edukacyjnego.
+
+## Odpowiedzi po zapisie produktu
+
+`POST /api/v1/products` zwraca `201 Created`, a `PUT /api/v1/products/{id}` zwraca `200 OK`. Oba endpointy zwracają pełny `ProductResponse`, w tym adresy zdjęć i liczbę polubień.
+
+To świadomy kontrakt z przyszłym frontendem. Po zapisie klient może odświeżyć widok na podstawie odpowiedzi, bez dodatkowego `GET`. Przy edycji samych danych produktu zbudowanie odpowiedzi wymaga odczytania metadanych galerii i policzenia polubień. Zdjęcia są reprezentowane w JSON-ie przez identyfikatory i adresy URL.

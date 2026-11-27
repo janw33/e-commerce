@@ -142,6 +142,29 @@ public final class TestDataUtil {
                 .build();
     }
 
+    public static Product product2() {
+        return Product.builder()
+                .id(1L)
+                .seller(user())
+                .category(category())
+                .brand(brand())
+                .title("test2")
+                .description("test2")
+                .price(BigDecimal.ONE)
+                .colors(Set.of(Color.GREEN))
+                .condition(Condition.LIKE_NEW)
+                .materials(Set.of(Material.WOOL))
+                .size(Size.ONE_SIZE)
+                .shippingSize(ShippingSize.LARGE)
+                .viewCount(0L)
+                .status(Status.ACTIVE)
+                .createdAt(testDate())
+                .updatedAt(LocalDateTime.of(1, 1, 1, 1, 2))
+                .deletedAt(null)
+                .soldAt(null)
+                .build();
+    }
+
     public static CreateProductRequest createProductRequest() {
         return CreateProductRequest.builder()
                 .title(product().getTitle())
@@ -186,17 +209,16 @@ public final class TestDataUtil {
 
     public static UpdateProductRequest updateProductRequest() {
         return UpdateProductRequest.builder()
-                .images(List.of(createImageRequest()))
-                .title(product().getTitle())
-                .description(product().getDescription())
-                .categoryId(product().getCategory().getId())
-                .brandId(product().getBrand().getId())
-                .size(product().getSize())
-                .shippingSize(product().getShippingSize())
-                .condition(product().getCondition())
-                .colors(product().getColors())
-                .materials(product().getMaterials())
-                .price(product().getPrice())
+                .title(product2().getTitle())
+                .description(product2().getDescription())
+                .categoryId(product2().getCategory().getId())
+                .brandId(product2().getBrand().getId())
+                .size(product2().getSize())
+                .shippingSize(product2().getShippingSize())
+                .condition(product2().getCondition())
+                .colors(product2().getColors())
+                .materials(product2().getMaterials())
+                .price(product2().getPrice())
                 .build();
     }
 

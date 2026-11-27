@@ -2,11 +2,11 @@ package com.example.ecommerce.services.product;
 
 import com.example.ecommerce.BaseTest.product.BaseTestProduct;
 import com.example.ecommerce.dtos.product.ProductResponse;
-import com.example.ecommerce.dtos.product.UpdateProductRequest;
 import com.example.ecommerce.entitites.product.enums.*;
 import com.example.ecommerce.entitites.product.productEntities.Image;
 import com.example.ecommerce.exceptions.brand.BrandNotFoundException;
 import com.example.ecommerce.exceptions.category.CategoryNotFoundException;
+import com.example.ecommerce.exceptions.image.InvalidImageCountException;
 import com.example.ecommerce.exceptions.product.InvalidSizeTypeException;
 import com.example.ecommerce.exceptions.product.ProductNotFoundException;
 import com.example.ecommerce.exceptions.user.UserNotFoundException;
@@ -22,19 +22,26 @@ import com.example.ecommerce.services.image.ImageUploadValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -63,8 +70,13 @@ public class UpdateProductTests extends BaseTestProduct {
     @Mock
     private ImageUploadValidator imageUploadValidator;
 
-    private final ProductMapper productMapper = new ProductMapper();
+    @Captor
+    private ArgumentCaptor<List<Image>> imagesCaptor;
 
+    @Captor
+    private ArgumentCaptor<List<String>> fileNamesCaptor;
+
+    private final ProductMapper productMapper = new ProductMapper();
     private final ImageMapper imageMapper = new ImageMapper();
 
     private ProductService productService;
@@ -90,10 +102,11 @@ public class UpdateProductTests extends BaseTestProduct {
 
         assertThrows(
                 UserNotFoundException.class,
-                () -> productService.updateProduct(updateProductRequest, authentication, product.getId())
+                () -> productService.updateProduct(updateProductRequest, List.of(imageFile), authentication, product.getId())
         );
 
-        verifyNoInteractions(productRepository, categoryRepository, brandRepository, likeRepository, imageRepository);
+        verifyNoInteractions(productRepository, categoryRepository, brandRepository,
+                likeRepository, imageRepository, imageUploadValidator);
     }
 
     @Test
@@ -106,12 +119,31 @@ public class UpdateProductTests extends BaseTestProduct {
 
         assertThrows(
                 ProductNotFoundException.class,
-                () -> productService.updateProduct(updateProductRequest, authentication, product.getId())
+                () -> productService.updateProduct(updateProductRequest, List.of(imageFile), authentication, product.getId())
         );
 
-        verifyNoInteractions(categoryRepository, brandRepository, likeRepository, imageRepository);
+        verifyNoInteractions(categoryRepository, brandRepository, likeRepository,
+                imageRepository, imageUploadValidator);
     }
 
+    @Test
+    void shouldThrowInvalidImageCountExceptionWhenMoreThanTwentyImagesAreUploaded() {
+        List<MultipartFile> uploads = Collections.nCopies(21, imageFile);
+
+        when(currentUserProvider.get(authentication))
+                .thenReturn(user);
+
+        when(productRepository.findBySellerAndIdAndStatus(user, product.getId(), Status.ACTIVE))
+                .thenReturn(Optional.of(product));
+
+        assertThrows(
+                InvalidImageCountException.class,
+                () -> productService.updateProduct(updateProductRequest, uploads, authentication, product.getId())
+        );
+
+        verifyNoInteractions(categoryRepository, brandRepository, likeRepository,
+                imageRepository, imageUploadValidator);
+    }
 
     @Test
     void shouldThrowCategoryNotFoundExceptionWhenCategoryDoesntExists() {
@@ -126,14 +158,14 @@ public class UpdateProductTests extends BaseTestProduct {
 
         assertThrows(
                 CategoryNotFoundException.class,
-                () -> productService.updateProduct(updateProductRequest, authentication, product.getId())
+                () -> productService.updateProduct(updateProductRequest, List.of(imageFile), authentication, product.getId())
         );
 
-        verifyNoInteractions(brandRepository, likeRepository, imageRepository);
+        verifyNoInteractions(brandRepository, likeRepository, imageRepository, imageUploadValidator);
     }
 
     @Test
-    void shouldThrowInvalidSizeTypeExceptionWhenCategorySizeTypeAndProductSizeTypeDoesntMatch() {
+    void shouldThrowInvalidSizeTypeExceptionWhenCategoryAndProductSizeTypesDontMatch() {
         category.setSizeType(SizeType.SHOES);
 
         when(currentUserProvider.get(authentication))
@@ -142,15 +174,15 @@ public class UpdateProductTests extends BaseTestProduct {
         when(productRepository.findBySellerAndIdAndStatus(user, product.getId(), Status.ACTIVE))
                 .thenReturn(Optional.of(product));
 
-        when(categoryRepository.findById(category.getId()))
+        when(categoryRepository.findById(updateProductRequest.getCategoryId()))
                 .thenReturn(Optional.of(category));
 
         assertThrows(
                 InvalidSizeTypeException.class,
-                () -> productService.updateProduct(updateProductRequest, authentication, product.getId())
+                () -> productService.updateProduct(updateProductRequest, List.of(imageFile), authentication, product.getId())
         );
 
-        verifyNoInteractions(brandRepository, likeRepository, imageRepository);
+        verifyNoInteractions(brandRepository, likeRepository, imageRepository, imageUploadValidator);
     }
 
     @Test
@@ -169,22 +201,15 @@ public class UpdateProductTests extends BaseTestProduct {
 
         assertThrows(
                 BrandNotFoundException.class,
-                () -> productService.updateProduct(updateProductRequest, authentication, product.getId())
+                () -> productService.updateProduct(updateProductRequest, List.of(imageFile), authentication, product.getId())
         );
 
-        verifyNoInteractions(likeRepository, imageRepository);
+        verifyNoInteractions(likeRepository, imageRepository, imageUploadValidator);
     }
 
-    @Test
-    void shouldUpdateProduct() {
-        updateProductRequest.setTitle("New Title");
-        updateProductRequest.setDescription("new description");
-        updateProductRequest.setPrice(new BigDecimal("42.50"));
-        updateProductRequest.setColors(Set.of(Color.RED));
-        updateProductRequest.setMaterials(Set.of(Material.WOOL));
-        updateProductRequest.setCondition(Condition.GOOD);
-        updateProductRequest.setShippingSize(ShippingSize.LARGE);
-
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldUpdateProductAndKeepExistingImagesWhenNoImagesAreUploaded(List<MultipartFile> uploads) throws IOException {
         when(currentUserProvider.get(authentication))
                 .thenReturn(user);
 
@@ -200,10 +225,10 @@ public class UpdateProductTests extends BaseTestProduct {
         when(likeRepository.countByProductId(product.getId()))
                 .thenReturn(3L);
 
-        when(imageRepository.saveAll(any()))
+        when(imageRepository.findAllByProductIdOrderByPositionAsc(product.getId()))
                 .thenReturn(List.of(image));
 
-        ProductResponse result = productService.updateProduct(updateProductRequest, authentication, product.getId());
+        ProductResponse result = productService.updateProduct(updateProductRequest, uploads, authentication, product.getId());
 
         assertEquals(updateProductRequest.getTitle(), product.getTitle());
         assertEquals(updateProductRequest.getDescription(), product.getDescription());
@@ -213,21 +238,20 @@ public class UpdateProductTests extends BaseTestProduct {
         assertEquals(updateProductRequest.getCondition(), product.getCondition());
         assertEquals(updateProductRequest.getShippingSize(), product.getShippingSize());
         assertEquals(updateProductRequest.getSize(), product.getSize());
-        assertEquals(updateProductRequest.getCategoryId(), product.getCategory().getId());
-        assertEquals(updateProductRequest.getBrandId(), product.getBrand().getId());
+        assertSame(category, product.getCategory());
+        assertSame(brand, product.getBrand());
 
-        assertEquals(updateProductRequest.getTitle(), result.getTitle());
-        assertEquals(updateProductRequest.getDescription(), result.getDescription());
-        assertEquals(updateProductRequest.getPrice(), result.getPrice());
-        assertEquals(updateProductRequest.getColors(), result.getColors());
-        assertEquals(updateProductRequest.getMaterials(), result.getMaterials());
-        assertEquals(updateProductRequest.getCondition(), result.getCondition());
-        assertEquals(updateProductRequest.getShippingSize(), result.getShippingSize());
-        assertEquals(updateProductRequest.getSize(), result.getSize());
-        assertEquals(updateProductRequest.getCategoryId(), result.getCategoryId());
-        assertEquals(updateProductRequest.getBrandId(), result.getBrandId());
+        assertEquals(product.getTitle(), result.getTitle());
+        assertEquals(product.getDescription(), result.getDescription());
+        assertEquals(product.getPrice(), result.getPrice());
+        assertEquals(product.getColors(), result.getColors());
+        assertEquals(product.getMaterials(), result.getMaterials());
+        assertEquals(product.getCondition(), result.getCondition());
+        assertEquals(product.getShippingSize(), result.getShippingSize());
+        assertEquals(product.getSize(), result.getSize());
+        assertEquals(category.getId(), result.getCategoryId());
+        assertEquals(brand.getId(), result.getBrandId());
         assertEquals(brand.getName(), result.getBrandName());
-
         assertEquals(product.getId(), result.getId());
         assertEquals(user.getId(), result.getSellerId());
         assertEquals(user.getFirstName(), result.getSellerUsername());
@@ -238,32 +262,108 @@ public class UpdateProductTests extends BaseTestProduct {
         assertEquals(product.getUpdatedAt(), result.getUpdatedAt());
         assertEquals(product.getDeletedAt(), result.getDeletedAt());
         assertEquals(product.getSoldAt(), result.getSoldAt());
-
-        assertNotNull(result.getImages());
         assertEquals(1, result.getImages().size());
         assertEquals(image.getId(), result.getImages().getFirst().getId());
         assertEquals(image.getUrl(), result.getImages().getFirst().getUrl());
 
-        InOrder inOrder = inOrder(imageRepository);
+        verify(productRepository).flush();
+        verify(imageRepository).findAllByProductIdOrderByPositionAsc(product.getId());
+        verifyNoMoreInteractions(imageRepository);
+        verifyNoInteractions(imageUploadValidator);
+    }
 
-        inOrder.verify(imageRepository).deleteAllByProductId(product.getId());
+    @ParameterizedTest
+    @ValueSource(ints = {2, 20})
+    void shouldReplaceImagesInUploadOrder(int imageCount) throws IOException {
+        when(currentUserProvider.get(authentication))
+                .thenReturn(user);
+
+        when(productRepository.findBySellerAndIdAndStatus(user, product.getId(), Status.ACTIVE))
+                .thenReturn(Optional.of(product));
+
+        when(categoryRepository.findById(updateProductRequest.getCategoryId()))
+                .thenReturn(Optional.of(category));
+
+        when(brandRepository.findById(updateProductRequest.getBrandId()))
+                .thenReturn(Optional.of(brand));
+
+        when(likeRepository.countByProductId(product.getId()))
+                .thenReturn(3L);
+
+        when(imageRepository.findAllByProductIdOrderByPositionAsc(product.getId()))
+                .thenReturn(List.of(image));
+
+        List<MultipartFile> uploads = Collections.nCopies(imageCount, imageFile);
+
+        List<String> fileNames = IntStream.range(0, imageCount)
+                .mapToObj(position -> "image-" + position + ".png")
+                .toList();
+
+        when(imageUploadValidator.store(imageFile))
+                .thenReturn(fileNames.getFirst(), fileNames.subList(1, imageCount).toArray(String[]::new));
+
+        when(imageRepository.saveAll(any()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        ProductResponse result = productService.updateProduct(updateProductRequest, uploads, authentication, product.getId());
+
+        InOrder inOrder = inOrder(imageUploadValidator, imageRepository);
+        inOrder.verify(imageUploadValidator).deleteFilesOnRollback(fileNamesCaptor.capture());
+        inOrder.verify(imageUploadValidator, times(imageCount)).store(imageFile);
+        inOrder.verify(imageRepository).deleteAll(List.of(image));
         inOrder.verify(imageRepository).flush();
-        inOrder.verify(imageRepository).saveAll(any());
+        inOrder.verify(imageRepository).saveAll(imagesCaptor.capture());
 
-        ArgumentCaptor<List<Image>> captor = ArgumentCaptor.forClass(List.class);
+        List<Image> savedImages = imagesCaptor.getValue();
+        assertEquals(imageCount, savedImages.size());
+        assertEquals(imageCount, result.getImages().size());
+        assertEquals(fileNames, fileNamesCaptor.getValue());
 
-        verify(imageRepository).saveAll(captor.capture());
+        for (int position = 0; position < imageCount; position++) {
+            Image savedImage = savedImages.get(position);
+            String expectedUrl = "/api/v1/image/files/" + fileNames.get(position);
+            assertSame(product, savedImage.getProduct());
+            assertEquals(position, savedImage.getPosition());
+            assertEquals(expectedUrl, savedImage.getUrl());
+            assertEquals(expectedUrl, result.getImages().get(position).getUrl());
+        }
+    }
 
-        List<Image> savedImages = captor.getValue();
+    @Test
+    void shouldKeepExistingImagesAndPropagateIOExceptionWhenUploadFails() throws IOException {
+        when(currentUserProvider.get(authentication))
+                .thenReturn(user);
 
-        assertEquals(1, savedImages.size());
-        assertEquals(product, savedImages.getFirst().getProduct());
-        assertEquals(updateProductRequest.getImages().getFirst().getUrl(), savedImages.getFirst().getUrl());
-        assertEquals(0, savedImages.getFirst().getPosition());
+        when(productRepository.findBySellerAndIdAndStatus(user, product.getId(), Status.ACTIVE))
+                .thenReturn(Optional.of(product));
 
-        verify(productRepository).findBySellerAndIdAndStatus(user, product.getId(), Status.ACTIVE);
-        verify(categoryRepository).findById(updateProductRequest.getCategoryId());
-        verify(brandRepository).findById(updateProductRequest.getBrandId());
-        verify(likeRepository).countByProductId(product.getId());
+        when(categoryRepository.findById(updateProductRequest.getCategoryId()))
+                .thenReturn(Optional.of(category));
+
+        when(brandRepository.findById(updateProductRequest.getBrandId()))
+                .thenReturn(Optional.of(brand));
+
+        when(likeRepository.countByProductId(product.getId()))
+                .thenReturn(3L);
+
+        when(imageRepository.findAllByProductIdOrderByPositionAsc(product.getId()))
+                .thenReturn(List.of(image));
+
+        IOException failure = new IOException("Could not store image");
+
+        when(imageUploadValidator.store(imageFile))
+                .thenReturn("first.png")
+                .thenThrow(failure);
+
+        IOException exception = assertThrows(
+                IOException.class,
+                () -> productService.updateProduct(updateProductRequest, List.of(imageFile, imageFile), authentication, product.getId())
+        );
+
+        assertSame(failure, exception);
+        verify(imageUploadValidator).deleteFilesOnRollback(fileNamesCaptor.capture());
+        assertEquals(List.of("first.png"), fileNamesCaptor.getValue());
+        verify(imageRepository).findAllByProductIdOrderByPositionAsc(product.getId());
+        verifyNoMoreInteractions(imageRepository);
     }
 }
