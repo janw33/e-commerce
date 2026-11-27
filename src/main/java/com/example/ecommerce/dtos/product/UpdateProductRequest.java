@@ -17,11 +17,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateProductRequest {
-    @Valid
-    @NotEmpty(message = "Images cannot be empty")
-    @Size(max = 20, message = "Number of images must not exceed 20")
-    private List<@NotNull(message = "Image cannot be null") @Valid CreateImageRequest> images;
-
     @NotBlank(message = "Title cannot be blank")
     @Size(min = 5, max = 100, message = "Title must be between 5 and 100 characters")
     private String title;

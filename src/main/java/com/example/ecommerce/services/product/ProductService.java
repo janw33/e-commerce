@@ -88,8 +88,8 @@ public class ProductService {
         Product savedProduct = productRepository.save(newProduct);
 
         List<Image> imageRecords = new ArrayList<>();
-
         List<String> storedFileNames = new ArrayList<>();
+
         imageUploadValidator.deleteFilesOnRollback(storedFileNames);
 
         for (int i = 0; i < images.size(); i++) {
@@ -111,12 +111,24 @@ public class ProductService {
         return productMapper.toResponse(savedProduct, 0, savedImages.stream().map(imageMapper::toResponse).toList());
     }
 
-    @Transactional
-    public ProductResponse updateProduct(UpdateProductRequest request, Authentication authentication, Long id) {
+    @Transactional(rollbackOn = IOException.class)
+    public ProductResponse updateProduct(
+            UpdateProductRequest request,
+            List<MultipartFile> images,
+            Authentication authentication,
+            Long id
+    ) throws IOException {
         User currentUser = currentUserProvider.get(authentication);
 
-        Product product = productRepository.findBySellerAndIdAndStatus(currentUser, id, Status.ACTIVE)
+        Product product = productRepository
+                .findBySellerAndIdAndStatus(currentUser, id, Status.ACTIVE)
                 .orElseThrow(ProductNotFoundException::new);
+
+        List<MultipartFile> uploads = images == null ? List.of() : images;
+
+        if (uploads.size() > MAX_IMAGES_PER_PRODUCT) {
+            throw new InvalidImageCountException();
+        }
 
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(CategoryNotFoundException::new);
@@ -141,17 +153,34 @@ public class ProductService {
 
         long likeCount = likeRepository.countByProductId(product.getId());
 
-        imageRepository.deleteAllByProductId(product.getId());
-        imageRepository.flush();
+        List<Image> savedImages =
+                imageRepository.findAllByProductIdOrderByPositionAsc(product.getId());
 
-        List<Image> newImages = IntStream.range(0, request.getImages().size())
-                .mapToObj(i -> imageMapper.toEntity(
-                        request.getImages().get(i),
-                        product,
-                        i))
-                .toList();
+        if (uploads.isEmpty()) {
+            productRepository.flush();
+        } else {
+            List<String> storedFileNames = new ArrayList<>();
+            imageUploadValidator.deleteFilesOnRollback(storedFileNames);
 
-        List<Image> savedImages = imageRepository.saveAll(newImages);
+            List<Image> replacements = new ArrayList<>();
+
+            for (int position = 0; position < uploads.size(); position++) {
+                String fileName = imageUploadValidator.store(uploads.get(position));
+                storedFileNames.add(fileName);
+
+                Image image = Image.builder()
+                        .product(product)
+                        .url("/api/v1/image/files/" + fileName)
+                        .position(position)
+                        .build();
+
+                replacements.add(image);
+            }
+
+            imageRepository.deleteAll(savedImages);
+            imageRepository.flush();
+            savedImages = imageRepository.saveAll(replacements);
+        }
 
         return productMapper.toResponse(product, likeCount, savedImages.stream().map(imageMapper::toResponse).toList());
     }

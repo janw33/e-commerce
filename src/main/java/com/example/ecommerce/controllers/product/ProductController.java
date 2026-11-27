@@ -41,10 +41,11 @@ public class ProductController {
     @PutMapping(path = "/{id}")
     public ProductResponse updateProduct(
             @RequestBody @Valid UpdateProductRequest request,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images,
             @PathVariable Long id,
             Authentication authentication
-    ) {
-        return productService.updateProduct(request, authentication, id);
+    ) throws IOException {
+        return productService.updateProduct(request, images, authentication, id);
     }
 
     @GetMapping
