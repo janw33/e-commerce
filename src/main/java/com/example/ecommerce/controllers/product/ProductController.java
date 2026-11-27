@@ -38,9 +38,9 @@ public class ProductController {
                 .body(productService.createProduct(request, images, authentication));
     }
 
-    @PutMapping(path = "/{id}")
+    @PutMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ProductResponse updateProduct(
-            @RequestBody @Valid UpdateProductRequest request,
+            @Valid @RequestPart("product") UpdateProductRequest request,
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
             @PathVariable Long id,
             Authentication authentication
